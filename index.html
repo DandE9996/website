@@ -179,13 +179,23 @@
     /* GLOBE CONTAINER */
     #globe-viz {
       width: 100%;
-      height: 600px; /* Made it taller for better view */
+      height: 600px; 
       border-radius: 24px;
       overflow: hidden;
-      background: #000011; /* Deep space background */
+      background: #040d21; /* Dark blue space background */
       margin-bottom: 32px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-      position: relative; /* Important for centering */
+      position: relative; 
+    }
+    
+    .globe-tooltip {
+        font-family: 'Inter', sans-serif;
+        background: rgba(255, 255, 255, 0.9);
+        color: #333;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
     }
 
     /* CARDS */
@@ -211,7 +221,6 @@
       border-color: var(--rose-light);
     }
 
-    /* Visual Hint */
     .card::after, .food-card::after {
       content: 'Click to view';
       position: absolute;
@@ -376,7 +385,7 @@
     <!-- TAB 1: HOME -->
     <section id="tab-home" class="tab-content active">
       <div class="hero-container">
-        <img src="https://images.unsplash.com/photo-1529619768328-e37af76c6fe5?auto=format&fit=crop&w=1200&q=80" alt="Us" class="hero-bg-image">
+        <img src="pics/london.jpg" alt="Us" class="hero-bg-image">
         
         <div class="hero-overlay">
           <div class="hero-heart">
@@ -403,8 +412,6 @@
       
       <!-- THE GLOBE CONTAINER -->
       <div id="globe-viz"></div>
-      
-      <!-- (Cards removed as requested. Interaction is via globe only.) -->
     </section>
 
 
@@ -500,9 +507,8 @@ I remember looking at you while you were reading the map, looking so confused, a
   <script>
     // --- GLOBAL VARIABLES ---
     let globeInitialized = false;
+    let myGlobeInstance = null; // Store instance to handle resize
     
-    // 1. DATA: Add your new trips here!
-    // The Globe uses this data to create points and popups.
     const travelData = [
       {
         lat: 48.2082, 
@@ -526,7 +532,6 @@ I remember looking at you while you were reading the map, looking so confused, a
 
     // --- FUNCTIONS ---
 
-    // 1. Tab Switching Logic
     function switchTab(tabName) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
@@ -537,64 +542,67 @@ I remember looking at you while you were reading the map, looking so confused, a
       if(selectedTab) selectedTab.classList.add('active');
       if(selectedBtn) selectedBtn.classList.add('active');
 
-      // Init globe if we switched to travel tab
       if (tabName === 'travel' && !globeInitialized) {
-        // Slight delay to let the div become visible so we can calculate width
         setTimeout(initGlobe, 50);
       }
     }
 
-    // 2. Globe Logic (Fixed alignment & High Res)
     function initGlobe() {
       if (typeof Globe === 'undefined') return; 
       
       const globeContainer = document.getElementById('globe-viz');
       if (!globeContainer) return;
 
-      // Explicitly get the width of the container to force centering
+      // Get explicit dimensions
       const w = globeContainer.clientWidth;
       const h = globeContainer.clientHeight;
 
-      const myGlobe = Globe()
-        .width(w)  // Force correct width
-        .height(h) // Force correct height
-        .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg') // High-Res Night mode
-        .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
+      myGlobeInstance = Globe()
+        .width(w)
+        .height(h)
+        // Use High-Res Blue Marble (Day)
+        .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+        .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
+        // Set atmosphere to look real
+        .atmosphereColor('lightskyblue')
+        .atmosphereAltitude(0.15)
+        .backgroundColor('rgba(0,0,0,0)') // Transparent so container background shows
         .pointsData(travelData)
-        .pointColor(() => '#f43f5e') // Rose color
-        .pointAltitude(0.07)
-        .pointRadius(0.6)
-        .pointsMerge(true)
+        .pointColor(() => '#f43f5e')
+        .pointAltitude(0.02)
+        .pointRadius(0.5) // Larger radius for easier clicking
+        .pointResolution(24)
+        .pointsMerge(false) // Better interactivity
         .pointLabel('label')
-        .onPointClick(d => openModalFromData(d)) // Open modal on click
+        .onPointClick(d => openModalFromData(d))
+        .onPointHover(d => {
+           globeContainer.style.cursor = d ? 'pointer' : 'default';
+        })
         (globeContainer);
 
-      // Auto-rotate
-      myGlobe.controls().autoRotate = true;
-      myGlobe.controls().autoRotateSpeed = 0.6;
+      myGlobeInstance.controls().autoRotate = true;
+      myGlobeInstance.controls().autoRotateSpeed = 0.5;
 
-      // Handle Window Resize (Keeps it centered)
       window.addEventListener('resize', () => {
-         myGlobe.width(globeContainer.clientWidth);
-         myGlobe.height(globeContainer.clientHeight);
+         if(myGlobeInstance && globeContainer) {
+           myGlobeInstance.width(globeContainer.clientWidth);
+           myGlobeInstance.height(globeContainer.clientHeight);
+         }
       });
 
       globeInitialized = true;
     }
 
-    // 3. Open Modal Logic (From HTML Element)
     function openModal(element) {
       const modal = document.getElementById('modal-overlay');
       if (!modal) return;
 
-      // Extract data
       const img = element.querySelector('img');
       const title = element.querySelector('.card-title, .food-title');
       const meta = element.querySelector('.meta-tag, .food-loc');
       const desc = element.querySelector('.card-text');
       const hiddenDesc = element.querySelector('.hidden-desc');
 
-      // Populate
       const data = {
         img: img ? img.src : null,
         title: title ? title.innerText : '',
@@ -605,7 +613,6 @@ I remember looking at you while you were reading the map, looking so confused, a
       openModalFromData(data);
     }
 
-    // 4. Open Modal Helper (From Data Object)
     function openModalFromData(data) {
       const modal = document.getElementById('modal-overlay');
       const modalImg = document.getElementById('modal-img');
@@ -630,7 +637,6 @@ I remember looking at you while you were reading the map, looking so confused, a
       document.body.style.overflow = 'hidden';
     }
 
-    // 5. Close Modal Logic
     function closeModal(event) {
       const modal = document.getElementById('modal-overlay');
       if (!modal) return;
@@ -641,7 +647,6 @@ I remember looking at you while you were reading the map, looking so confused, a
       }
     }
     
-    // 6. Days Together Calculation
     function updateDaysCount() {
       const display = document.getElementById('days-display');
       if (!display) return;
@@ -654,7 +659,6 @@ I remember looking at you while you were reading the map, looking so confused, a
       display.innerText = diffDays;
     }
 
-    // --- EXECUTION ---
     updateDaysCount();
 
     if (typeof lucide !== 'undefined') {
