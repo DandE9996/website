@@ -8,7 +8,7 @@
   <!-- 1. Load Icons (Lucide) -->
   <script src="https://unpkg.com/lucide@latest"></script>
   
-  <!-- 2. Load Fonts (Inter for body, Playfair for headers) -->
+  <!-- 2. Load Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
@@ -22,7 +22,6 @@
       --text-muted: #78716c;     /* stone-500 */
       --rose-primary: #f43f5e;   /* rose-500 */
       --rose-light: #ffe4e6;     /* rose-100 */
-      --rose-soft: #fff1f2;      /* rose-50 */
       --rose-dark: #be123c;      /* rose-700 */
       --border-color: #e7e5e4;   /* stone-200 */
     }
@@ -47,13 +46,23 @@
     }
 
     .header-inner {
-      max-width: 896px;
+      max-width: 900px;
       margin: 0 auto;
-      height: 64px;
-      padding: 0 16px;
+      padding: 12px 16px;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
+      gap: 12px;
+    }
+
+    /* Responsive Header: Row on larger screens */
+    @media (min-width: 640px) {
+      .header-inner {
+        flex-direction: row;
+        justify-content: space-between;
+        height: 72px;
+        padding: 0 24px;
+      }
     }
 
     .logo {
@@ -66,16 +75,31 @@
       color: var(--text-main);
     }
 
+    /* Navigation */
+    nav {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto; /* Allow scrolling on very small screens */
+      width: 100%;
+      justify-content: center;
+      padding-bottom: 4px; /* Space for scrollbar if needed */
+    }
+    
+    @media (min-width: 640px) {
+      nav { width: auto; padding-bottom: 0; }
+    }
+
     .nav-btn {
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 16px;
+      padding: 8px 16px;
       border-radius: 9999px;
       border: none;
       cursor: pointer;
-      font-size: 0.875rem;
+      font-size: 0.85rem;
       font-weight: 500;
+      white-space: nowrap;
       transition: all 0.2s;
       background: transparent;
       color: var(--text-muted);
@@ -84,23 +108,53 @@
     .nav-btn:hover { background-color: #f5f5f4; }
     .nav-btn.active { background-color: var(--rose-light); color: var(--rose-dark); }
 
-    /* --- HERO SECTION (DAYS COUNTER) --- */
-    .hero {
-      background: linear-gradient(to bottom, var(--rose-soft), var(--bg-color));
+    /* --- MAIN CONTENT AREA --- */
+    main {
+      max-width: 800px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    .tab-content { display: none; animation: fadeIn 0.5s ease; }
+    .tab-content.active { display: block; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* --- TAB 1: HOME (HERO IMAGE + COUNTER) --- */
+    .hero-container {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 32px;
+    }
+
+    .hero-bg-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      /* Make image slightly darker so text pops */
+      filter: brightness(0.85); 
+    }
+
+    .hero-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       text-align: center;
-      padding: 48px 20px 32px;
-      margin-bottom: 16px;
+      color: white;
+      width: 100%;
+      padding: 20px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
 
-    .hero-content {
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    .heart-beat {
-      color: var(--rose-primary);
+    .hero-heart {
       animation: heartbeat 1.5s ease-in-out infinite;
       margin-bottom: 16px;
+      display: inline-block;
     }
 
     @keyframes heartbeat {
@@ -113,70 +167,43 @@
 
     .days-count {
       font-family: 'Playfair Display', serif;
-      font-size: 4rem;
+      font-size: 5rem;
       font-weight: 700;
       line-height: 1;
-      color: var(--rose-dark);
       margin-bottom: 8px;
     }
 
     .hero-text {
-      font-size: 1.1rem;
-      color: var(--text-muted);
+      font-size: 1.25rem;
       font-weight: 400;
-      letter-spacing: 0.02em;
+      opacity: 0.9;
     }
-
-    .start-date {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      opacity: 0.7;
+    
+    .hero-subtext {
+      font-size: 0.9rem;
+      opacity: 0.8;
       margin-top: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
-    /* --- MAIN CONTENT --- */
-    main {
-      max-width: 768px;
-      margin: 0 auto 32px;
-      padding: 0 16px;
-    }
+    /* --- COMMON CARD STYLES --- */
+    .section-header { margin-bottom: 24px; text-align: center; }
+    .section-header h2 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 8px; color: var(--text-main); }
+    .section-header p { color: var(--text-muted); }
 
-    .section-header { margin-bottom: 24px; padding-top: 24px; border-top: 1px solid var(--border-color); }
-    .section-header h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
-      margin-bottom: 4px;
-    }
-    .section-header p { color: var(--text-muted); font-size: 0.9rem; }
-
-    /* Tab Logic */
-    .tab-content { display: none; animation: fadeIn 0.6s ease; }
-    .tab-content.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-    /* --- CARDS --- */
-    .card, .journal-entry {
+    .card {
       background: var(--card-bg);
       border-radius: 16px;
       border: 1px solid var(--border-color);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
       overflow: hidden;
       margin-bottom: 32px;
-      transition: transform 0.2s ease;
+      transition: transform 0.2s;
     }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(0,0,0,0.08); }
 
-    .card:hover, .journal-entry:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
-    }
-
-    .card-image {
-      width: 100%;
-      height: 320px;
-      object-fit: cover;
-      background-color: #f5f5f5;
-    }
-
+    .card-image { width: 100%; height: 300px; object-fit: cover; }
     .card-body { padding: 24px; }
 
     .meta-tag {
@@ -184,11 +211,11 @@
       align-items: center;
       gap: 6px;
       color: var(--rose-primary);
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 600;
-      letter-spacing: 0.03em;
-      margin-bottom: 12px;
       text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
     }
 
     .card-title {
@@ -198,29 +225,46 @@
       margin-bottom: 12px;
       color: var(--text-main);
     }
+    .card-text { color: #44403c; white-space: pre-wrap; }
 
-    .card-text {
-      color: #44403c;
-      white-space: pre-wrap;
-      font-size: 1rem;
+    /* --- FOOD GRID --- */
+    .food-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
     }
+    
+    .food-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .food-image {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+    
+    .food-content { padding: 16px; }
+    .food-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 4px; }
+    .food-loc { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
 
-    /* Journal Specifics */
-    .journal-entry { padding: 28px; }
-
+    /* --- FOOTER --- */
     footer {
       text-align: center;
       padding: 40px 0;
       color: var(--text-muted);
       font-size: 0.875rem;
-      border-top: 1px solid var(--border-color);
       margin-top: 48px;
+      border-top: 1px solid var(--border-color);
     }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
   <header>
     <div class="header-inner">
       <div class="logo">
@@ -228,88 +272,139 @@
         <span>Our Story</span>
       </div>
       <nav>
-        <button id="btn-moments" class="nav-btn active" onclick="switchTab('moments')">
-          <i data-lucide="camera" width="16"></i> Moments
+        <button id="btn-home" class="nav-btn active" onclick="switchTab('home')">
+          <i data-lucide="home" width="16"></i> Home
         </button>
-        <button id="btn-blogs" class="nav-btn" onclick="switchTab('blogs')">
+        <button id="btn-travel" class="nav-btn" onclick="switchTab('travel')">
+          <i data-lucide="plane" width="16"></i> Travel
+        </button>
+        <button id="btn-food" class="nav-btn" onclick="switchTab('food')">
+          <i data-lucide="utensils" width="16"></i> Food
+        </button>
+        <button id="btn-blog" class="nav-btn" onclick="switchTab('blog')">
           <i data-lucide="book-open" width="16"></i> Journal
         </button>
       </nav>
     </div>
   </header>
 
-  <!-- HERO: DAYS COUNTER -->
-  <section class="hero">
-    <div class="hero-content">
-      <div class="heart-beat">
-        <i data-lucide="heart" width="40" height="40" class="fill-current"></i>
-      </div>
-      <!-- The number updates automatically via JavaScript -->
-      <div class="days-count" id="days-display">0</div>
-      <div class="hero-text">Days of loving you</div>
-      <div class="start-date">Since January 8, 2025</div>
-    </div>
-  </section>
-
   <main>
     
-    <!-- TAB 1: MOMENTS (Photos) -->
-    <section id="tab-moments" class="tab-content active">
+    <!-- TAB 1: HOME (Big Photo + Counter) -->
+    <section id="tab-home" class="tab-content active">
+      <div class="hero-container">
+        <!-- REPLACE THIS IMAGE WITH A PHOTO OF YOU TWO -->
+        <img src="https://images.unsplash.com/photo-1529619768328-e37af76c6fe5?auto=format&fit=crop&w=1200&q=80" alt="Us" class="hero-bg-image">
+        
+        <div class="hero-overlay">
+          <div class="hero-heart">
+            <i data-lucide="heart" width="48" height="48" class="fill-white text-white"></i>
+          </div>
+          <div class="days-count" id="days-display">0</div>
+          <div class="hero-text">Days Together</div>
+          <div class="hero-subtext">Since January 8, 2025</div>
+        </div>
+      </div>
+      
+      <div style="text-align: center; max-width: 500px; margin: 0 auto; color: var(--text-muted);">
+        <p>Welcome to our little corner of the internet. This is where I keep our memories safe.</p>
+      </div>
+    </section>
+
+
+    <!-- TAB 2: TRAVEL (Where we have been) -->
+    <section id="tab-travel" class="tab-content">
       <div class="section-header">
-        <h2>Photo Timeline</h2>
-        <p>Our favorite memories captured in time.</p>
+        <h2>Where We Have Been</h2>
+        <p>Adventures, road trips, and getaways.</p>
       </div>
 
-      <!-- MOMENT: Start Copying Here -->
+      <!-- TRAVEL POST 1 -->
       <article class="card">
-        <!-- Replace src with your image path -->
-        <img src="https://images.unsplash.com/photo-1516550893923-42d28e5677af?auto=format&fit=crop&w=800&q=80" alt="Memory 1" class="card-image">
+        <img src="https://images.unsplash.com/photo-1516550893923-42d28e5677af?auto=format&fit=crop&w=800&q=80" alt="Vienna" class="card-image">
         <div class="card-body">
           <div class="meta-tag">
-            <i data-lucide="calendar" width="14"></i> April 24, 2025
+            <i data-lucide="map-pin" width="14"></i> Vienna, Austria · April 2025
           </div>
-          <h3 class="card-title">Our Trip to Vienna</h3>
+          <h3 class="card-title">Our first big trip</h3>
           <p class="card-text">We finally made it! The streets were beautiful and we walked for hours. I will never forget the coffee we had at that small corner cafe.</p>
         </div>
       </article>
-      <!-- End Copying Here -->
 
-      <!-- MOMENT 2 -->
+      <!-- TRAVEL POST 2 -->
       <article class="card">
-        <img src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80" alt="Memory 2" class="card-image">
+        <img src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80" alt="London" class="card-image">
         <div class="card-body">
           <div class="meta-tag">
-            <i data-lucide="calendar" width="14"></i> January 1, 2025
+            <i data-lucide="map-pin" width="14"></i> London, UK · Jan 2025
           </div>
           <h3 class="card-title">New Year's in London</h3>
           <p class="card-text">It was freezing cold but your hand was warm. Happy new year to us.</p>
         </div>
       </article>
-
     </section>
 
 
-    <!-- TAB 2: JOURNAL (Text) -->
-    <section id="tab-blogs" class="tab-content">
+    <!-- TAB 3: FOOD (What we have eaten) -->
+    <section id="tab-food" class="tab-content">
       <div class="section-header">
-        <h2>Our Journal</h2>
-        <p>Letters, notes, and thoughts.</p>
+        <h2>What We Have Eaten</h2>
+        <p>The best meals we've shared.</p>
       </div>
 
-      <!-- JOURNAL: Start Copying Here -->
-      <article class="journal-entry">
-        <div class="meta-tag">April 27, 2025</div>
-        <h3 class="card-title">Why I love traveling with you</h3>
-        <p class="card-text">Even when we get lost (which we did three times today), you always make it fun. I love that we can just sit on a park bench and talk for hours without checking our phones.</p>
-      </article>
-      <!-- End Copying Here -->
+      <div class="food-grid">
+        <!-- Food Item 1 -->
+        <div class="food-card">
+          <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=500&q=60" alt="Pizza" class="food-image">
+          <div class="food-content">
+            <h3 class="food-title">Late Night Pizza</h3>
+            <div class="food-loc"><i data-lucide="map-pin" width="12"></i> Mario's Place</div>
+          </div>
+        </div>
 
-      <article class="journal-entry">
-        <div class="meta-tag">January 12, 2025</div>
-        <h3 class="card-title">Rainy days</h3>
-        <p class="card-text">We stayed in, ordered pizza, and watched movies all day. Sometimes the quiet days are the best ones. I made a promise to myself to appreciate these moments more.</p>
+        <!-- Food Item 2 -->
+        <div class="food-card">
+          <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=500&q=60" alt="Sushi" class="food-image">
+          <div class="food-content">
+            <h3 class="food-title">Sushi Date</h3>
+            <div class="food-loc"><i data-lucide="map-pin" width="12"></i> Downtown Tokyo</div>
+          </div>
+        </div>
+
+        <!-- Food Item 3 -->
+        <div class="food-card">
+          <img src="https://images.unsplash.com/photo-1563379926898-05f4575a45d8?auto=format&fit=crop&w=500&q=60" alt="Pasta" class="food-image">
+          <div class="food-content">
+            <h3 class="food-title">Homemade Pasta</h3>
+            <div class="food-loc"><i data-lucide="home" width="12"></i> At home</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- TAB 4: BLOG (Journal) -->
+    <section id="tab-blog" class="tab-content">
+      <div class="section-header">
+        <h2>Our Journal</h2>
+        <p>Letters and thoughts.</p>
+      </div>
+
+      <article class="card">
+        <div class="card-body">
+          <div class="meta-tag">April 27, 2025</div>
+          <h3 class="card-title">Why I love traveling with you</h3>
+          <p class="card-text">Even when we get lost (which we did three times today), you always make it fun. I love that we can just sit on a park bench and talk for hours without checking our phones.</p>
+        </div>
       </article>
 
+      <article class="card">
+        <div class="card-body">
+          <div class="meta-tag">January 12, 2025</div>
+          <h3 class="card-title">Rainy days</h3>
+          <p class="card-text">We stayed in, ordered pizza, and watched movies all day. Sometimes the quiet days are the best ones.</p>
+        </div>
+      </article>
     </section>
 
   </main>
@@ -318,32 +413,27 @@
     <p>Made with ❤️ for us • 2025</p>
   </footer>
 
-  <!-- JAVASCRIPT -->
   <script>
     // 1. Initialize Icons
     lucide.createIcons();
 
     // 2. Days Together Calculation
     function updateDaysCount() {
-      const startDate = new Date('2025-01-08'); // YEAR-MONTH-DAY
+      const startDate = new Date('2025-01-08'); 
       const today = new Date();
-      
-      // Calculate difference in time (milliseconds)
       const diffTime = Math.abs(today - startDate);
-      // Convert to days (1000ms * 60s * 60min * 24h)
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      
-      // Update the HTML element
       document.getElementById('days-display').innerText = diffDays;
     }
-    
-    // Run calculation immediately
     updateDaysCount();
 
     // 3. Tab Switching Logic
     function switchTab(tabName) {
+      // Hide all tabs
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+      
+      // Show selected
       document.getElementById('tab-' + tabName).classList.add('active');
       document.getElementById('btn-' + tabName).classList.add('active');
     }
