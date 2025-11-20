@@ -422,15 +422,46 @@
         animation: floatUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         cursor: pointer;
         transition: transform 0.3s;
+        position: relative;
     }
 
     .food-display-card:hover { transform: translateY(-5px); }
 
-    .fd-img {
+    /* NEW GALLERY STYLES */
+    .gallery-container {
         width: 100%;
         height: 280px;
-        object-fit: cover;
+        overflow-x: auto;
+        display: flex;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none; /* Hide scrollbar */
     }
+    .gallery-container::-webkit-scrollbar { display: none; }
+    
+    .gallery-img {
+        min-width: 100%;
+        height: 100%;
+        object-fit: cover;
+        scroll-snap-align: start;
+    }
+
+    .gallery-indicator {
+        position: absolute;
+        top: 250px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 6px;
+        z-index: 10;
+    }
+    
+    .indicator-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.5);
+        backdrop-filter: blur(2px);
+    }
+    /* End New Gallery Styles */
 
     .fd-content { padding: 24px; position: relative; }
     .fd-date {
@@ -444,6 +475,7 @@
         font-size: 0.85rem;
         font-weight: 600;
         box-shadow: 0 4px 10px rgba(244, 63, 94, 0.3);
+        z-index: 20;
     }
 
     @keyframes floatUp {
@@ -649,17 +681,11 @@
       { lat: 48.864716, lng: 2.349014, label: "Paris", title: "巴黎之夜", img: "", meta: "法国巴黎", desc: "我们不需要埃菲尔铁塔的完美视角，也不需要完美的咖啡馆。只需要一张长椅，一块点心。" }
     ];
 
-    // FOOD TIMELINE DATA (Starts Dec 2024)
+    // FOOD TIMELINE DATA (Starts Jan 2025)
     const foodData = [
-        { date: '2024-12-25', title: "圣诞前夜大餐", loc: "家中", img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=60", desc: "我们尝试自己烤火鸡，虽然有点焦，但红酒很好喝。" },
-        { date: '2024-12-31', title: "跨年火锅", loc: "海底捞", img: "https://images.unsplash.com/photo-1625642669728-d30b93166326?auto=format&fit=crop&w=600&q=60", desc: "热气腾腾的火锅，迎接新的一年。你说只要有火锅，哪里都是家。" },
-        { date: '2025-01-08', title: "纪念日蛋糕", loc: "甜品店", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=60", desc: "这是我们正式在一起的第一天，这块草莓蛋糕甜得刚刚好。" },
-        { date: '2025-01-15', title: "深夜披萨", loc: "马里奥餐厅", img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=60", desc: "这绝对是我们吃过最好吃的披萨。当时是凌晨2点，我们快饿疯了！" },
-        { date: '2025-02-14', title: "情人节寿司", loc: "东京市中心", img: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=600&q=60", desc: "第一次尝试海胆。你讨厌它，但我爱死它了。" },
-        { date: '2025-03-20', title: "自制意面", loc: "家里", img: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?auto=format&fit=crop&w=600&q=60", desc: "我们在厨房搞得一团糟，但做出来的意面竟然出奇地好吃。" },
-        { date: '2025-04-05', title: "街头小吃", loc: "维也纳市场", img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=60", desc: "烤香肠和啤酒。简单的快乐。" },
-        { date: '2025-11-15', title: "Eva又要回国啦", loc: "Quehong Restaurants", img: "pics/食物/20251115a.jpg", desc: "又是在伯明翰一起的两周，去机场前的午饭！某人用Pocket拍完视频就放在饭店不拿了。还好是虚惊一场~" },
-      
+        { date: '2025-01-08', title: "我们在一起啦", loc: "日料店", img: ["pics/食物/20250108b.jpg","pics/食物/20250108c.jpg"], desc: "正式在一起的第一天，空气都是甜的。" },
+        { date: '2025-01-10', title: "漂亮饭", loc: "龙吟山房", img: ["pics/食物/20250110a.jpg","pics/食物/20250110b.jpg","pics/食物/20250110c.jpg","pics/食物/20250110d.jpg"], desc: "和漂亮老婆在一起的第一顿漂亮饭+回家后的小酌" },
+        { date: '2025-11-15', title: "Eva又要回国啦", loc: "Quehong Restaurants", img: ["pics/食物/20251115a.jpg","pics/食物/20251115b.jpg","pics/食物/20251115c.jpg"], desc: "在伯明翰愉快的两周转眼就结束了，去机场前的午饭！某人用Pocket拍完视频就放在饭店不拿了。还好是虚惊一场~" }
     ];
 
     // --- 2. TIMELINE LOGIC ---
@@ -776,10 +802,31 @@
 
         const card = document.createElement('div');
         card.className = 'food-display-card';
-        card.onclick = () => openModalFromData(data); // Allow clicking to expand
+        card.onclick = () => openModalFromData(data); 
+
+        // Generate Images HTML
+        let imagesHtml = '';
+        let indicatorsHtml = '';
+        
+        // Handle array of images
+        const images = Array.isArray(data.img) ? data.img : [data.img];
+        
+        imagesHtml = `<div class="gallery-container">`;
+        images.forEach(src => {
+            imagesHtml += `<img src="${src}" class="gallery-img" alt="${data.title}">`;
+        });
+        imagesHtml += `</div>`;
+
+        // Add indicators if more than 1 image
+        if (images.length > 1) {
+            indicatorsHtml = `<div class="gallery-indicator">
+                ${images.map(() => `<div class="indicator-dot"></div>`).join('')}
+            </div>`;
+        }
 
         card.innerHTML = `
-            <img src="${data.img}" class="fd-img" alt="${data.title}">
+            ${imagesHtml}
+            ${indicatorsHtml}
             <div class="fd-content">
                 <div class="fd-date">${data.date}</div>
                 <h3 class="card-title" style="font-size:1.8rem;">${data.title}</h3>
@@ -926,6 +973,7 @@
     function openModal(element) {
       const modal = document.getElementById('modal-overlay');
       if (!modal) return;
+      // Simplified logic for non-food cards (Blog)
       const img = element.querySelector('img');
       const title = element.querySelector('.card-title');
       const meta = element.querySelector('.meta-tag');
@@ -948,8 +996,16 @@
       const modalDesc = document.getElementById('modal-desc');
       if (!modal) return;
 
-      if (data.img && modalImg) {
-        modalImg.src = data.img; modalImg.style.display = 'block';
+      // Handle Image Array or Single String
+      let imageSrc = '';
+      if (Array.isArray(data.img) && data.img.length > 0) {
+          imageSrc = data.img[0]; // Just show first image in modal for now
+      } else if (typeof data.img === 'string') {
+          imageSrc = data.img;
+      }
+
+      if (imageSrc && modalImg) {
+        modalImg.src = imageSrc; modalImg.style.display = 'block';
       } else if (modalImg) {
         modalImg.style.display = 'none';
       }
