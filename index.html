@@ -427,11 +427,11 @@
 
     .food-display-card:hover { transform: translateY(-5px); }
 
-    /* NEW GALLERY STYLES */
+    /* NEW GALLERY STYLES (For both Card and Modal) */
     .gallery-wrapper {
         position: relative;
         width: 100%;
-        height: 400px; /* Increased height for better viewing */
+        height: 400px; /* Default height for Card view */
         background: #000; /* Black background for letterboxing */
     }
 
@@ -498,8 +498,6 @@
     .nav-prev { left: 16px; }
     .nav-next { right: 16px; }
 
-    /* End New Gallery Styles */
-
     .fd-content { padding: 24px; position: relative; }
     .fd-date {
         position: absolute;
@@ -548,7 +546,18 @@
       transition: background 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .modal-close:hover { background: white; transform: scale(1.05); }
-    .modal-img { width: 100%; height: auto; max-height: 500px; object-fit: cover; display: none; }
+    
+    /* MODAL GALLERY SPECIFIC */
+    .modal-gallery-area {
+        width: 100%;
+        height: 500px; /* Taller height for modal view */
+        background: #000;
+        position: relative;
+    }
+
+    /* Hide the default single modal img since we use the gallery view now */
+    .modal-img { display: none; }
+
     .modal-body { padding: 32px; }
     .modal-meta { color: var(--rose-primary); font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; text-transform: uppercase; }
     .modal-title { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; margin-bottom: 16px; line-height: 1.2; }
@@ -678,7 +687,11 @@
       <button class="modal-close" onclick="closeModal(event)">
         <i data-lucide="x" width="24"></i>
       </button>
+      
+      <div id="modal-gallery-view" class="modal-gallery-area"></div>
+      
       <img id="modal-img" class="modal-img" src="" alt="">
+
       <div class="modal-body">
         <div id="modal-meta" class="modal-meta"></div>
         <h2 id="modal-title" class="modal-title"></h2>
@@ -1051,24 +1064,73 @@
 
     function openModalFromData(data) {
       const modal = document.getElementById('modal-overlay');
+      const modalGalleryView = document.getElementById('modal-gallery-view');
       const modalImg = document.getElementById('modal-img');
       const modalMeta = document.getElementById('modal-meta');
       const modalTitle = document.getElementById('modal-title');
       const modalDesc = document.getElementById('modal-desc');
       if (!modal) return;
 
-      // Handle Image Array or Single String
-      let imageSrc = '';
-      if (Array.isArray(data.img) && data.img.length > 0) {
-          imageSrc = data.img[0]; // Just show first image in modal for now
-      } else if (typeof data.img === 'string') {
-          imageSrc = data.img;
+      // CLEAR previous content
+      modalGalleryView.innerHTML = '';
+      modalImg.src = '';
+
+      // Handle Image Array vs Single String
+      let images = [];
+      if (Array.isArray(data.img)) {
+          images = data.img;
+      } else if (data.img) {
+          images = [data.img];
       }
 
-      if (imageSrc && modalImg) {
-        modalImg.src = imageSrc; modalImg.style.display = 'block';
-      } else if (modalImg) {
-        modalImg.style.display = 'none';
+      // If we have images, build the gallery structure
+      if (images.length > 0) {
+          modalGalleryView.style.display = 'block';
+          modalImg.style.display = 'none';
+
+          let imagesHtml = '';
+          let indicatorsHtml = '';
+          let navButtonsHtml = '';
+          const galleryId = 'modal-gallery-scroll';
+
+          // Images
+          imagesHtml = `<div id="${galleryId}" class="gallery-container">`;
+          images.forEach(src => {
+              imagesHtml += `<img src="${src}" class="gallery-img" alt="${data.title}">`;
+          });
+          imagesHtml += `</div>`;
+
+          // Indicators & Nav if > 1 image
+          if (images.length > 1) {
+              indicatorsHtml = `<div class="gallery-indicator">
+                  ${images.map(() => `<div class="indicator-dot"></div>`).join('')}
+              </div>`;
+              
+              navButtonsHtml = `
+                  <div class="nav-arrow nav-prev" onclick="scrollGallery('${galleryId}', -1, event)">
+                      <i data-lucide="chevron-left" width="24"></i>
+                  </div>
+                  <div class="nav-arrow nav-next" onclick="scrollGallery('${galleryId}', 1, event)">
+                      <i data-lucide="chevron-right" width="24"></i>
+                  </div>
+              `;
+          }
+
+          modalGalleryView.innerHTML = `
+              <div class="gallery-wrapper" style="height: 100%;">
+                  ${imagesHtml}
+                  ${navButtonsHtml}
+                  ${indicatorsHtml}
+              </div>
+          `;
+          
+          // Refresh icons inside modal
+          lucide.createIcons();
+
+      } else {
+          // No images
+          modalGalleryView.style.display = 'none';
+          modalImg.style.display = 'none';
       }
 
       if (modalTitle) modalTitle.innerText = data.title || data.label || '';
@@ -1107,4 +1169,3 @@
   </script>
 </body>
 </html>
-
