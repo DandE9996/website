@@ -577,19 +577,80 @@ I remember looking at you while you were reading the map, looking so confused, a
         img: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80",
         meta: "London, UK · Jan 2025",
         desc: "It was freezing cold but your hand was warm. We watched the fireworks from a distance because the crowd was too crazy. Happy new year to us."
+      },
+      {
+        lat: 34.746613,
+        lng: 113.625328,
+        label: "Zhengzhou",
+        title: "Skies over Zhengzhou",
+        img: "",
+        meta: "Zhengzhou, China",
+        desc: "Dusty skies, busy streets, and somehow we still found a quiet corner just for us. We walked without any plan and ended up talking about everything and nothing at the same time."
+      },
+      {
+        lat: 32.049999,
+        lng: 118.766670,
+        label: "Nanjing",
+        title: "Slow afternoons in Nanjing",
+        img: "",
+        meta: "Nanjing, China",
+        desc: "Tree-lined roads, old walls, and the feeling that the city had a hundred stories it wanted to tell us. We shared roasted sweet potatoes while watching the sunset behind the city wall."
+      },
+      {
+        lat: 27.825110,
+        lng: 99.707790,
+        label: "Shangri-La",
+        title: "High altitudes, soft laughs",
+        img: "",
+        meta: "Shangri-La, China",
+        desc: "Cold air, warm cheeks, and prayer flags fluttering above us. You kept checking if I was dizzy from the altitude, but honestly, I think it was just you making my heart race."
+      },
+      {
+        lat: 26.865118,
+        lng: 100.229301,
+        label: "Lijiang",
+        title: "Night lights of Lijiang",
+        img: "",
+        meta: "Lijiang, China",
+        desc: "Lanterns reflected in the water and music drifting through the streets. We got lost in the alleys again and again, but we always found our way back to each other."
+      },
+      {
+        lat: 25.702600,
+        lng: 100.155400,
+        label: "Dali",
+        title: "Wind, lake and mountains",
+        img: "",
+        meta: "Dali, China",
+        desc: "The wind from the lake was colder than we expected, so we shared a scarf and walked along the shore anyway. The mountains watched us quietly while we made new little promises."
+      },
+      {
+        lat: 31.224361,
+        lng: 121.469170,
+        label: "Shanghai",
+        title: "Lights of Shanghai",
+        img: "",
+        meta: "Shanghai, China",
+        desc: "Neon lights, crowded streets, and a river that somehow made the whole city feel calmer. We stood by the Bund and imagined all the future trips we still want to take together."
+      },
+      {
+        lat: 50.073658,
+        lng: 14.418540,
+        label: "Prague",
+        title: "Bridges of Prague",
+        img: "",
+        meta: "Prague, Czech Republic",
+        desc: "Cobblestone streets, old bridges, and the sound of our footsteps echoing late at night. You kept stopping to take photos and I kept taking secret photos of you instead."
+      },
+      {
+        lat: 48.864716,
+        lng: 2.349014,
+        label: "Paris",
+        title: "Paris evenings",
+        img: "",
+        meta: "Paris, France",
+        desc: "We didn’t need the perfect view of the tower or the perfect café. Just a bench, a pastry, your hand in mine, and suddenly the city really did feel like it was made for love."
       }
     ];
-    
-    // Calculate Arcs (connecting points)
-    const arcsData = [];
-    for (let i = 0; i < travelData.length - 1; i++) {
-      arcsData.push({
-        startLat: travelData[i].lat,
-        startLng: travelData[i].lng,
-        endLat: travelData[i+1].lat,
-        endLng: travelData[i+1].lng
-      });
-    }
 
     // --- FUNCTIONS ---
 
@@ -653,7 +714,7 @@ I remember looking at you while you were reading the map, looking so confused, a
             .pointsData(travelData)
             .pointColor(() => '#fb7185') // Soft rose
             .pointAltitude(0.06)
-            .pointRadius(0.28) // much smaller than before (was 1.2)
+            .pointRadius(0.28) // much smaller than original
             .pointResolution(24)
             .pointsMerge(true)
             .pointLabel('label') // tooltip with city name
@@ -669,14 +730,6 @@ I remember looking at you while you were reading the map, looking so confused, a
             .ringPropagationSpeed(2.5)
             .ringRepeatPeriod(900)
             
-            // ARCS (Flight paths) - thinner + gradient
-            .arcsData(arcsData)
-            .arcColor(() => ['#22d3ee', '#f97316']) // cyan -> amber gradient
-            .arcDashLength(0.45)
-            .arcDashGap(0.15)
-            .arcDashAnimateTime(1600)
-            .arcStroke(0.35)
-
             // LABELS - floating city names above pins
             .labelsData(travelData)
             .labelText('label')
