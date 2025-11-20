@@ -5,22 +5,24 @@
   <title>Our Story</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
+  <!-- 1. Load Icons (Lucide) -->
   <script src="https://unpkg.com/lucide@latest"></script>
   
+  <!-- 2. Load Fonts (Inter for body, Playfair for headers) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
 
   <style>
-    /* --- CSS STYLES (The Visual Design) --- */
+    /* --- CSS STYLES --- */
     :root {
-      /* Color Palette (Matching your React code) */
       --bg-color: #fafaf9;       /* stone-50 */
       --card-bg: #ffffff;        /* white */
       --text-main: #292524;      /* stone-800 */
       --text-muted: #78716c;     /* stone-500 */
       --rose-primary: #f43f5e;   /* rose-500 */
       --rose-light: #ffe4e6;     /* rose-100 */
+      --rose-soft: #fff1f2;      /* rose-50 */
       --rose-dark: #be123c;      /* rose-700 */
       --border-color: #e7e5e4;   /* stone-200 */
     }
@@ -34,7 +36,7 @@
       line-height: 1.6;
     }
 
-    /* Header Styles */
+    /* --- HEADER --- */
     header {
       background: var(--card-bg);
       border-bottom: 1px solid var(--border-color);
@@ -45,7 +47,7 @@
     }
 
     .header-inner {
-      max-width: 896px; /* max-w-4xl */
+      max-width: 896px;
       margin: 0 auto;
       height: 64px;
       padding: 0 16px;
@@ -58,17 +60,11 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      color: var(--rose-primary);
       font-family: 'Playfair Display', serif;
       font-weight: 700;
       font-size: 1.25rem;
       color: var(--text-main);
     }
-
-    .logo-icon { color: var(--rose-primary); }
-
-    /* Navigation Buttons */
-    nav { display: flex; gap: 12px; }
 
     .nav-btn {
       display: flex;
@@ -86,63 +82,113 @@
     }
 
     .nav-btn:hover { background-color: #f5f5f4; }
+    .nav-btn.active { background-color: var(--rose-light); color: var(--rose-dark); }
 
-    .nav-btn.active {
-      background-color: var(--rose-light);
-      color: var(--rose-dark);
+    /* --- HERO SECTION (DAYS COUNTER) --- */
+    .hero {
+      background: linear-gradient(to bottom, var(--rose-soft), var(--bg-color));
+      text-align: center;
+      padding: 48px 20px 32px;
+      margin-bottom: 16px;
     }
 
-    /* Main Layout */
+    .hero-content {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .heart-beat {
+      color: var(--rose-primary);
+      animation: heartbeat 1.5s ease-in-out infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes heartbeat {
+      0% { transform: scale(1); }
+      15% { transform: scale(1.15); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.15); }
+      60% { transform: scale(1); }
+    }
+
+    .days-count {
+      font-family: 'Playfair Display', serif;
+      font-size: 4rem;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--rose-dark);
+      margin-bottom: 8px;
+    }
+
+    .hero-text {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+    }
+
+    .start-date {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      opacity: 0.7;
+      margin-top: 8px;
+    }
+
+    /* --- MAIN CONTENT --- */
     main {
-      max-width: 768px; /* max-w-3xl */
-      margin: 32px auto;
+      max-width: 768px;
+      margin: 0 auto 32px;
       padding: 0 16px;
     }
 
-    /* Section Tabs Logic */
-    .tab-content { display: none; animation: fadeIn 0.5s ease; }
-    .tab-content.active { display: block; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .section-header { margin-bottom: 32px; }
+    .section-header { margin-bottom: 24px; padding-top: 24px; border-top: 1px solid var(--border-color); }
     .section-header h2 {
       font-family: 'Playfair Display', serif;
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       margin-bottom: 4px;
     }
     .section-header p { color: var(--text-muted); font-size: 0.9rem; }
 
-    /* --- MOMENT CARDS (Photos) --- */
-    .card {
+    /* Tab Logic */
+    .tab-content { display: none; animation: fadeIn 0.6s ease; }
+    .tab-content.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* --- CARDS --- */
+    .card, .journal-entry {
       background: var(--card-bg);
-      border-radius: 12px;
+      border-radius: 16px;
       border: 1px solid var(--border-color);
-      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
       overflow: hidden;
       margin-bottom: 32px;
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover, .journal-entry:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
     }
 
     .card-image {
       width: 100%;
-      height: 320px; /* Fixed height for consistency */
+      height: 320px;
       object-fit: cover;
       background-color: #f5f5f5;
     }
 
     .card-body { padding: 24px; }
 
-    .card-meta {
+    .meta-tag {
       display: flex;
       align-items: center;
       gap: 6px;
       color: var(--rose-primary);
-      font-size: 0.875rem;
-      font-weight: 500;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
       margin-bottom: 12px;
+      text-transform: uppercase;
     }
 
     .card-title {
@@ -155,52 +201,30 @@
 
     .card-text {
       color: #44403c;
-      white-space: pre-wrap; /* Preserves paragraphs */
+      white-space: pre-wrap;
+      font-size: 1rem;
     }
 
-    /* --- JOURNAL CARDS (Text Only) --- */
-    .journal-entry {
-      background: var(--card-bg);
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-      padding: 24px;
-      margin-bottom: 24px;
-      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      transition: transform 0.2s;
-    }
-    
-    .journal-entry:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-
-    .journal-meta {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
-    .journal-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.25rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: var(--text-main);
-    }
+    /* Journal Specifics */
+    .journal-entry { padding: 28px; }
 
     footer {
       text-align: center;
       padding: 40px 0;
       color: var(--text-muted);
       font-size: 0.875rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 48px;
     }
   </style>
 </head>
 <body>
 
+  <!-- Header -->
   <header>
     <div class="header-inner">
       <div class="logo">
-        <i data-lucide="heart" class="logo-icon fill-current"></i>
+        <i data-lucide="heart" class="fill-rose-500 text-rose-500" width="20"></i>
         <span>Our Story</span>
       </div>
       <nav>
@@ -214,31 +238,48 @@
     </div>
   </header>
 
+  <!-- HERO: DAYS COUNTER -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="heart-beat">
+        <i data-lucide="heart" width="40" height="40" class="fill-current"></i>
+      </div>
+      <!-- The number updates automatically via JavaScript -->
+      <div class="days-count" id="days-display">0</div>
+      <div class="hero-text">Days of loving you</div>
+      <div class="start-date">Since January 8, 2025</div>
+    </div>
+  </section>
+
   <main>
     
+    <!-- TAB 1: MOMENTS (Photos) -->
     <section id="tab-moments" class="tab-content active">
       <div class="section-header">
-        <h2>Timeline</h2>
-        <p>Capturing our special days together.</p>
+        <h2>Photo Timeline</h2>
+        <p>Our favorite memories captured in time.</p>
       </div>
 
+      <!-- MOMENT: Start Copying Here -->
       <article class="card">
-        <img src="https://images.unsplash.com/photo-1516550893923-42d28e5677af?auto=format&fit=crop&w=800&q=80" alt="Vienna" class="card-image">
+        <!-- Replace src with your image path -->
+        <img src="https://images.unsplash.com/photo-1516550893923-42d28e5677af?auto=format&fit=crop&w=800&q=80" alt="Memory 1" class="card-image">
         <div class="card-body">
-          <div class="card-meta">
-            <i data-lucide="calendar" width="16"></i>
-            <span>April 24, 2025</span>
+          <div class="meta-tag">
+            <i data-lucide="calendar" width="14"></i> April 24, 2025
           </div>
           <h3 class="card-title">Our Trip to Vienna</h3>
           <p class="card-text">We finally made it! The streets were beautiful and we walked for hours. I will never forget the coffee we had at that small corner cafe.</p>
         </div>
       </article>
+      <!-- End Copying Here -->
+
+      <!-- MOMENT 2 -->
       <article class="card">
-        <img src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80" alt="London" class="card-image">
+        <img src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80" alt="Memory 2" class="card-image">
         <div class="card-body">
-          <div class="card-meta">
-            <i data-lucide="calendar" width="16"></i>
-            <span>January 1, 2025</span>
+          <div class="meta-tag">
+            <i data-lucide="calendar" width="14"></i> January 1, 2025
           </div>
           <h3 class="card-title">New Year's in London</h3>
           <p class="card-text">It was freezing cold but your hand was warm. Happy new year to us.</p>
@@ -248,20 +289,24 @@
     </section>
 
 
+    <!-- TAB 2: JOURNAL (Text) -->
     <section id="tab-blogs" class="tab-content">
       <div class="section-header">
-        <h2>Love Journal</h2>
-        <p>Thoughts, letters, and little things.</p>
+        <h2>Our Journal</h2>
+        <p>Letters, notes, and thoughts.</p>
       </div>
 
+      <!-- JOURNAL: Start Copying Here -->
       <article class="journal-entry">
-        <div class="journal-meta">April 27, 2025 • Sunday</div>
-        <h3 class="journal-title">Why I love traveling with you</h3>
+        <div class="meta-tag">April 27, 2025</div>
+        <h3 class="card-title">Why I love traveling with you</h3>
         <p class="card-text">Even when we get lost (which we did three times today), you always make it fun. I love that we can just sit on a park bench and talk for hours without checking our phones.</p>
       </article>
+      <!-- End Copying Here -->
+
       <article class="journal-entry">
-        <div class="journal-meta">January 12, 2025 • Friday</div>
-        <h3 class="journal-title">Rainy days</h3>
+        <div class="meta-tag">January 12, 2025</div>
+        <h3 class="card-title">Rainy days</h3>
         <p class="card-text">We stayed in, ordered pizza, and watched movies all day. Sometimes the quiet days are the best ones. I made a promise to myself to appreciate these moments more.</p>
       </article>
 
@@ -270,20 +315,35 @@
   </main>
 
   <footer>
-    <p>Recorded with love • 2025</p>
+    <p>Made with ❤️ for us • 2025</p>
   </footer>
 
+  <!-- JAVASCRIPT -->
   <script>
     // 1. Initialize Icons
     lucide.createIcons();
 
-    // 2. Tab Switching Logic
+    // 2. Days Together Calculation
+    function updateDaysCount() {
+      const startDate = new Date('2025-01-08'); // YEAR-MONTH-DAY
+      const today = new Date();
+      
+      // Calculate difference in time (milliseconds)
+      const diffTime = Math.abs(today - startDate);
+      // Convert to days (1000ms * 60s * 60min * 24h)
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      // Update the HTML element
+      document.getElementById('days-display').innerText = diffDays;
+    }
+    
+    // Run calculation immediately
+    updateDaysCount();
+
+    // 3. Tab Switching Logic
     function switchTab(tabName) {
-      // Hide all sections
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-
-      // Show selected section
       document.getElementById('tab-' + tabName).classList.add('active');
       document.getElementById('btn-' + tabName).classList.add('active');
     }
