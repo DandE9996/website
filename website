@@ -1,0 +1,453 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { initializeApp } from 'firebase/app';
+import { 
+  getAuth, 
+  signInAnonymously, 
+  onAuthStateChanged,
+  signInWithCustomToken
+} from 'firebase/auth';
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  query, 
+  orderBy, 
+  onSnapshot, 
+  serverTimestamp,
+  deleteDoc,
+  doc 
+} from 'firebase/firestore';
+import { 
+  Heart, 
+  Calendar, 
+  Image as ImageIcon, 
+  PenTool, 
+  Plus, 
+  Trash2, 
+  Clock,
+  Camera,
+  X
+} from 'lucide-react';
+
+// --- Firebase Setup ---
+const firebaseConfig = JSON.parse(__firebase_config);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+// --- Components ---
+
+// 1. Setup Screen (To set the start date)
+const SetupScreen = ({ onComplete }) => {
+  const [startDate, setStartDate] = useState('');
+  const [names, setNames] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (startDate && names) {
+      localStorage.setItem('our_journey_start_date', startDate);
+      localStorage.setItem('our_journey_names', names);
+      onComplete(startDate, names);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-rose-100 to-teal-50 flex items-center justify-center p-4">
+      <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center">
+        <div className="flex justify-center mb-4">
+          <div className="bg-rose-100 p-3 rounded-full">
+            <Heart className="w-8 h-8 text-rose-500 fill-current" />
+          </div>
+        </div>
+        <h1 className="text-3xl font-bold text-slate-800 mb-2">Welcome to Our Journey</h1>
+        <p className="text-slate-500 mb-8">Let's set up your memory lane.</p>
+        
+        <form onSubmit={handleSubmit} className="space-y-4 text-left">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Your Names</label>
+            <input 
+              type="text" 
+              required
+              placeholder="e.g., Alex & Sam"
+              className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-rose-300 focus:border-rose-300 outline-none transition"
+              value={names}
+              onChange={(e) => setNames(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Relationship Start Date</label>
+            <input 
+              type="date" 
+              required
+              className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-rose-300 focus:border-rose-300 outline-none transition"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </div>
+          <button 
+            type="submit"
+            className="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-md hover:shadow-lg"
+          >
+            Start Recording Memories
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+// 2. Main Application
+export default function App() {
+  const [user, setUser] = useState(null);
+  const [memories, setMemories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  
+  // Setup State
+  const [relationshipData, setRelationshipData] = useState({
+    startDate: localStorage.getItem('our_journey_start_date'),
+    names: localStorage.getItem('our_journey_names')
+  });
+
+  // Form State
+  const [newMemory, setNewMemory] = useState({
+    type: 'photo', // or 'blog'
+    title: '',
+    content: '',
+    imageUrl: '',
+    date: new Date().toISOString().split('T')[0]
+  });
+
+  // --- Auth & Data Fetching ---
+  useEffect(() => {
+    const initAuth = async () => {
+      if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+        await signInWithCustomToken(auth, __initial_auth_token);
+      } else {
+        await signInAnonymously(auth);
+      }
+    };
+    initAuth();
+    const unsubscribe = onAuthStateChanged(auth, (u) => setUser(u));
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+
+    // Using public collection so both partners can potentially see it if they share the App ID/Link
+    // In a real multi-user production app, you'd use a shared ID logic.
+    const q = query(
+      collection(db, 'artifacts', appId, 'public', 'data', 'moments')
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const items = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+      // Sort manually in memory since we aren't using complex Firestore indexes
+      items.sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      setMemories(items);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching memories:", error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
+  // --- Logic ---
+
+  const handleAddMemory = async (e) => {
+    e.preventDefault();
+    if (!user) return;
+
+    try {
+      await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'moments'), {
+        ...newMemory,
+        createdAt: serverTimestamp(),
+        userId: user.uid
+      });
+      
+      setShowForm(false);
+      setNewMemory({
+        type: 'photo',
+        title: '',
+        content: '',
+        imageUrl: '',
+        date: new Date().toISOString().split('T')[0]
+      });
+    } catch (error) {
+      console.error("Error adding memory:", error);
+      alert("Failed to add memory. Please try again.");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!user) return;
+    if (window.confirm("Are you sure you want to delete this memory?")) {
+      try {
+        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'moments', id));
+      } catch (error) {
+        console.error("Error deleting:", error);
+      }
+    }
+  };
+
+  const calculateDays = () => {
+    if (!relationshipData.startDate) return 0;
+    const start = new Date(relationshipData.startDate);
+    const now = new Date();
+    const diffTime = Math.abs(now - start);
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+  };
+
+  const handleSetupComplete = (date, names) => {
+    setRelationshipData({ startDate: date, names: names });
+  };
+
+  // Group memories by Month Year
+  const groupedMemories = useMemo(() => {
+    const groups = {};
+    memories.forEach(memory => {
+      const date = new Date(memory.date);
+      const key = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(memory);
+    });
+    return groups;
+  }, [memories]);
+
+  if (!relationshipData.startDate) {
+    return <SetupScreen onComplete={handleSetupComplete} />;
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
+      {/* --- Header --- */}
+      <header className="bg-white shadow-sm sticky top-0 z-10 border-b border-rose-100">
+        <div className="max-w-3xl mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <div className="bg-gradient-to-tr from-rose-400 to-rose-600 p-2 rounded-lg text-white">
+              <Heart size={20} fill="currentColor" />
+            </div>
+            <div>
+              <h1 className="font-bold text-lg leading-tight">{relationshipData.names}</h1>
+              <p className="text-xs text-slate-500 flex items-center gap-1">
+                <Clock size={10} /> {calculateDays()} Days Together
+              </p>
+            </div>
+          </div>
+          <button 
+            onClick={() => setShowForm(true)}
+            className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-full text-sm font-medium transition flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+          >
+            <Plus size={16} />
+            <span className="hidden sm:inline">New Memory</span>
+          </button>
+        </div>
+      </header>
+
+      {/* --- Main Content --- */}
+      <main className="max-w-3xl mx-auto px-4 py-8">
+        
+        {loading && (
+          <div className="text-center py-20">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-rose-500 mx-auto mb-4"></div>
+            <p className="text-slate-400">Loading memories...</p>
+          </div>
+        )}
+
+        {!loading && memories.length === 0 && (
+          <div className="text-center py-20 bg-white rounded-3xl shadow-sm border border-dashed border-slate-300">
+            <Camera className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+            <h3 className="text-xl font-medium text-slate-700">No memories yet</h3>
+            <p className="text-slate-500 mt-2 mb-6">Start documenting your journey today.</p>
+            <button 
+              onClick={() => setShowForm(true)}
+              className="text-rose-600 font-medium hover:underline"
+            >
+              Add your first photo or blog
+            </button>
+          </div>
+        )}
+
+        {/* Timeline */}
+        <div className="space-y-12">
+          {Object.entries(groupedMemories).map(([month, items]) => (
+            <div key={month} className="relative">
+              {/* Month Sticky Header */}
+              <div className="sticky top-20 z-0 mb-6 flex items-center">
+                <div className="bg-rose-100 text-rose-700 px-4 py-1 rounded-full text-sm font-bold shadow-sm border border-rose-200">
+                  {month}
+                </div>
+                <div className="h-px bg-rose-100 flex-grow ml-4"></div>
+              </div>
+
+              {/* Grid of Memories */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {items.map((item) => (
+                  <div 
+                    key={item.id} 
+                    className="group bg-white rounded-2xl shadow-sm hover:shadow-md transition border border-slate-100 overflow-hidden flex flex-col"
+                  >
+                    {/* Image Section */}
+                    {item.type === 'photo' && item.imageUrl && (
+                      <div className="aspect-video bg-slate-100 relative overflow-hidden">
+                        <img 
+                          src={item.imageUrl} 
+                          alt={item.title} 
+                          className="w-full h-full object-cover transform group-hover:scale-105 transition duration-500"
+                          onError={(e) => {
+                            e.target.src = 'https://placehold.co/600x400/pink/white?text=Image+Error';
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    {/* Content Section */}
+                    <div className="p-5 flex flex-col flex-grow">
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-slate-400">
+                          {item.type === 'photo' ? <Camera size={12} /> : <PenTool size={12} />}
+                          {new Date(item.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}
+                        </span>
+                        <button 
+                          onClick={() => handleDelete(item.id)}
+                          className="text-slate-300 hover:text-red-500 transition p-1"
+                          title="Delete memory"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+
+                      <h3 className="text-lg font-bold text-slate-800 mb-2 leading-snug">{item.title}</h3>
+                      <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-wrap mb-4 flex-grow">
+                        {item.content}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </main>
+
+      {/* --- Modal Form --- */}
+      {showForm && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
+              <h2 className="text-xl font-bold text-slate-800">New Memory</h2>
+              <button onClick={() => setShowForm(false)} className="text-slate-400 hover:text-slate-600 transition">
+                <X size={24} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleAddMemory} className="p-6 space-y-4">
+              {/* Type Selector */}
+              <div className="grid grid-cols-2 gap-4 mb-2">
+                <button
+                  type="button"
+                  onClick={() => setNewMemory({...newMemory, type: 'photo'})}
+                  className={`p-3 rounded-xl border flex items-center justify-center gap-2 transition ${
+                    newMemory.type === 'photo' 
+                      ? 'bg-rose-50 border-rose-500 text-rose-700' 
+                      : 'border-slate-200 text-slate-500 hover:border-rose-300'
+                  }`}
+                >
+                  <ImageIcon size={18} /> Photo
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setNewMemory({...newMemory, type: 'blog'})}
+                  className={`p-3 rounded-xl border flex items-center justify-center gap-2 transition ${
+                    newMemory.type === 'blog' 
+                      ? 'bg-teal-50 border-teal-500 text-teal-700' 
+                      : 'border-slate-200 text-slate-500 hover:border-teal-300'
+                  }`}
+                >
+                  <PenTool size={18} /> Blog
+                </button>
+              </div>
+
+              {/* Date */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-3 text-slate-400" size={18} />
+                  <input 
+                    type="date"
+                    required
+                    value={newMemory.date}
+                    onChange={(e) => setNewMemory({...newMemory, date: e.target.value})}
+                    className="w-full pl-10 p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-300 focus:border-rose-300 outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Title */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Title</label>
+                <input 
+                  type="text"
+                  required
+                  placeholder={newMemory.type === 'photo' ? "Example: Trip to the Beach" : "Example: Thoughts on our Anniversary"}
+                  value={newMemory.title}
+                  onChange={(e) => setNewMemory({...newMemory, title: e.target.value})}
+                  className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-300 focus:border-rose-300 outline-none"
+                />
+              </div>
+
+              {/* Image URL (Only if Photo) */}
+              {newMemory.type === 'photo' && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Image Link (URL)</label>
+                  <input 
+                    type="url"
+                    required
+                    placeholder="https://example.com/photo.jpg"
+                    value={newMemory.imageUrl}
+                    onChange={(e) => setNewMemory({...newMemory, imageUrl: e.target.value})}
+                    className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-300 focus:border-rose-300 outline-none"
+                  />
+                  <p className="text-xs text-slate-400 mt-1">
+                    Tip: Right-click an image online and select "Copy Image Address" to paste here.
+                  </p>
+                </div>
+              )}
+
+              {/* Description/Content */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  {newMemory.type === 'photo' ? 'Caption' : 'Your Story'}
+                </label>
+                <textarea 
+                  required
+                  rows={4}
+                  placeholder="Write something sweet..."
+                  value={newMemory.content}
+                  onChange={(e) => setNewMemory({...newMemory, content: e.target.value})}
+                  className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-rose-300 focus:border-rose-300 outline-none resize-none"
+                />
+              </div>
+
+              <button 
+                type="submit"
+                className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl transition duration-200 flex items-center justify-center gap-2"
+              >
+                Save Memory
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
