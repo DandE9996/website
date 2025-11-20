@@ -5,7 +5,7 @@
   <title>Our Story</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <!-- 1. Load Icons (Lucide) -->
+  <!-- 1. Load Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   
   <!-- 2. Load Fonts -->
@@ -16,14 +16,14 @@
   <style>
     /* --- CSS STYLES --- */
     :root {
-      --bg-color: #fafaf9;       /* stone-50 */
-      --card-bg: #ffffff;        /* white */
-      --text-main: #292524;      /* stone-800 */
-      --text-muted: #78716c;     /* stone-500 */
-      --rose-primary: #f43f5e;   /* rose-500 */
-      --rose-light: #ffe4e6;     /* rose-100 */
-      --rose-dark: #be123c;      /* rose-700 */
-      --border-color: #e7e5e4;   /* stone-200 */
+      --bg-color: #fafaf9;       
+      --card-bg: #ffffff;        
+      --text-main: #292524;      
+      --text-muted: #78716c;     
+      --rose-primary: #f43f5e;   
+      --rose-light: #ffe4e6;     
+      --rose-dark: #be123c;      
+      --border-color: #e7e5e4;   
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -35,7 +35,7 @@
       line-height: 1.6;
     }
 
-    /* --- HEADER --- */
+    /* HEADER */
     header {
       background: var(--card-bg);
       border-bottom: 1px solid var(--border-color);
@@ -74,7 +74,6 @@
       color: var(--text-main);
     }
 
-    /* Navigation */
     nav {
       display: flex;
       gap: 8px;
@@ -107,7 +106,7 @@
     .nav-btn:hover { background-color: #f5f5f4; }
     .nav-btn.active { background-color: var(--rose-light); color: var(--rose-dark); }
 
-    /* --- MAIN CONTENT AREA --- */
+    /* MAIN LAYOUT */
     main {
       max-width: 800px;
       margin: 24px auto;
@@ -119,7 +118,7 @@
     
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* --- TAB 1: HOME --- */
+    /* HERO SECTION */
     .hero-container {
       position: relative;
       width: 100%;
@@ -174,12 +173,11 @@
     .hero-text { font-size: 1.25rem; font-weight: 400; opacity: 0.9; }
     .hero-subtext { font-size: 0.9rem; opacity: 0.8; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; }
 
-    /* --- COMMON CARD STYLES --- */
+    /* CARDS */
     .section-header { margin-bottom: 24px; text-align: center; }
     .section-header h2 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 8px; color: var(--text-main); }
     .section-header p { color: var(--text-muted); }
 
-    /* Updated Card Styles for Interactivity */
     .card, .food-card {
       background: var(--card-bg);
       border-radius: 16px;
@@ -188,18 +186,17 @@
       overflow: hidden;
       margin-bottom: 32px;
       transition: all 0.3s ease;
-      cursor: pointer; /* Shows it's clickable */
+      cursor: pointer;
       position: relative;
     }
     
-    /* Hover Effect */
     .card:hover, .food-card:hover { 
       transform: translateY(-5px); 
       box-shadow: 0 12px 24px rgba(0,0,0,0.1); 
       border-color: var(--rose-light);
     }
 
-    /* Add a visual hint that it's clickable */
+    /* Hint visual */
     .card::after, .food-card::after {
       content: 'Click to view';
       position: absolute;
@@ -239,7 +236,7 @@
       margin-bottom: 12px;
       color: var(--text-main);
     }
-    /* Clamp text to 3 lines for preview */
+    
     .card-text { 
       color: #44403c; 
       white-space: pre-wrap;
@@ -249,7 +246,7 @@
       overflow: hidden;
     }
 
-    /* --- FOOD GRID --- */
+    /* FOOD GRID */
     .food-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -261,9 +258,9 @@
     .food-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 4px; }
     .food-loc { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
 
-    /* --- MODAL (POPUP) STYLES --- */
+    /* MODAL POPUP */
     .modal-overlay {
-      display: none; /* Hidden by default */
+      display: none;
       position: fixed;
       top: 0;
       left: 0;
@@ -323,7 +320,6 @@
     .modal-title { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; margin-bottom: 16px; line-height: 1.2; }
     .modal-desc { font-size: 1.1rem; color: #333; line-height: 1.8; white-space: pre-wrap; }
 
-    /* --- FOOTER --- */
     footer {
       text-align: center;
       padding: 40px 0;
@@ -388,8 +384,6 @@
         <h2>Where We Have Been</h2>
         <p>Click on any trip to see more details.</p>
       </div>
-
-      <!-- To add content: Put the full text in a data-desc attribute if it's very long, or just inside the <p> -->
       
       <article class="card" onclick="openModal(this)">
         <img src="https://images.unsplash.com/photo-1516550893923-42d28e5677af?auto=format&fit=crop&w=800&q=80" alt="Vienna" class="card-image">
@@ -430,7 +424,6 @@ I will never forget the coffee we had at that small corner cafe. We sat there fo
           <div class="food-content">
             <h3 class="food-title">Late Night Pizza</h3>
             <div class="food-loc"><i data-lucide="map-pin" width="12"></i> Mario's Place</div>
-            <!-- Hidden description for modal -->
             <div style="display:none;" class="hidden-desc">Best pizza we've ever had. It was 2 AM and we were starving!</div>
           </div>
         </div>
@@ -508,38 +501,30 @@ I remember looking at you while you were reading the map, looking so confused, a
   </div>
 
   <script>
-    // 1. Initialize Icons
-    lucide.createIcons();
-
-    // 2. Days Together Calculation
-    function updateDaysCount() {
-      const startDate = new Date('2025-01-08'); 
-      const today = new Date();
-      const diffTime = Math.abs(today - startDate);
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      document.getElementById('days-display').innerText = diffDays;
-    }
-    updateDaysCount();
-
-    // 3. Tab Switching Logic
-    function switchTab(tabName) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-      
-      document.getElementById('tab-' + tabName).classList.add('active');
-      document.getElementById('btn-' + tabName).classList.add('active');
-    }
-
-    // 4. Modal Logic
+    // --- 1. GLOBAL VARIABLES (Defined immediately) ---
+    // We define these FIRST so they exist even if icons fail to load
     const modal = document.getElementById('modal-overlay');
     const modalImg = document.getElementById('modal-img');
     const modalMeta = document.getElementById('modal-meta');
     const modalTitle = document.getElementById('modal-title');
     const modalDesc = document.getElementById('modal-desc');
 
-    function openModal(element) {
-      // Extract data from the clicked element
+    // --- 2. FUNCTIONS ---
+
+    // Tab Switching Logic
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
       
+      const selectedTab = document.getElementById('tab-' + tabName);
+      const selectedBtn = document.getElementById('btn-' + tabName);
+      
+      if(selectedTab) selectedTab.classList.add('active');
+      if(selectedBtn) selectedBtn.classList.add('active');
+    }
+
+    // Open Modal Logic
+    function openModal(element) {
       // 1. Image
       const img = element.querySelector('img');
       if (img) {
@@ -562,7 +547,7 @@ I remember looking at you while you were reading the map, looking so confused, a
       const hiddenDesc = element.querySelector('.hidden-desc');
       
       if (desc) {
-        modalDesc.innerText = desc.innerText; // Uses innerText to preserve line breaks
+        modalDesc.innerText = desc.innerText;
       } else if (hiddenDesc) {
         modalDesc.innerText = hiddenDesc.innerText;
       } else {
@@ -571,15 +556,38 @@ I remember looking at you while you were reading the map, looking so confused, a
 
       // Show Modal
       modal.classList.add('open');
-      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+      document.body.style.overflow = 'hidden'; // Prevent scrolling background
     }
 
+    // Close Modal Logic
     function closeModal(event) {
-      // Close if clicked overlay or close button (but not inside content)
       if (event.target === modal || event.currentTarget.classList.contains('modal-close')) {
         modal.classList.remove('open');
         document.body.style.overflow = '';
       }
+    }
+    
+    // Days Together Calculation
+    function updateDaysCount() {
+      const startDate = new Date('2025-01-08'); 
+      const today = new Date();
+      const diffTime = Math.abs(today - startDate);
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const display = document.getElementById('days-display');
+      if(display) display.innerText = diffDays;
+    }
+
+    // --- 3. EXECUTION ---
+    
+    // Run calculations immediately
+    updateDaysCount();
+
+    // Safe Icon Loading (Wrapped in check so it doesn't crash the app if it fails)
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    } else {
+      // Fallback if icons fail to load: just don't crash
+      console.log('Icons could not be loaded. Please check your internet connection.');
     }
   </script>
 </body>
