@@ -2,13 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Daniel & Eva</title>
+  <title>Our Story</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <!-- 1. Load Icons (Using a specific stable version) -->
+  <!-- 1. Load Icons -->
   <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
   
-  <!-- 2. Load Fonts -->
+  <!-- 2. Load Globe Library (New!) -->
+  <script src="//unpkg.com/globe.gl"></script>
+  
+  <!-- 3. Load Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
@@ -172,6 +175,17 @@
 
     .hero-text { font-size: 1.25rem; font-weight: 400; opacity: 0.9; }
     .hero-subtext { font-size: 0.9rem; opacity: 0.8; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* GLOBE CONTAINER */
+    #globe-viz {
+      width: 100%;
+      height: 500px;
+      border-radius: 24px;
+      overflow: hidden;
+      background: #000; /* Space background */
+      margin-bottom: 32px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
 
     /* CARDS */
     .section-header { margin-bottom: 24px; text-align: center; }
@@ -337,7 +351,7 @@
     <div class="header-inner">
       <div class="logo">
         <i data-lucide="heart" class="fill-rose-500 text-rose-500" width="20"></i>
-        <span>Daniel & Eva</span>
+        <span>Our Story</span>
       </div>
       <nav>
         <button id="btn-home" class="nav-btn active" onclick="switchTab('home')">
@@ -361,7 +375,7 @@
     <!-- TAB 1: HOME -->
     <section id="tab-home" class="tab-content active">
       <div class="hero-container">
-        <img src="pics/london.jpg" alt="Us" class="hero-bg-image">
+        <img src="https://images.unsplash.com/photo-1529619768328-e37af76c6fe5?auto=format&fit=crop&w=1200&q=80" alt="Us" class="hero-bg-image">
         
         <div class="hero-overlay">
           <div class="hero-heart">
@@ -379,14 +393,23 @@
     </section>
 
 
-    <!-- TAB 2: TRAVEL -->
+    <!-- TAB 2: TRAVEL (EARTH) -->
     <section id="tab-travel" class="tab-content">
       <div class="section-header">
         <h2>Where We Have Been</h2>
-        <p>Click on any trip to see more details.</p>
+        <p>Spin the globe to see our adventures.</p>
       </div>
       
-      <article class="card" onclick="openModal(this)">
+      <!-- THE GLOBE CONTAINER -->
+      <div id="globe-viz"></div>
+
+      <!-- List view below for easier reading -->
+      <div class="section-header" style="margin-top: 40px;">
+        <p>Travel Journal</p>
+      </div>
+
+      <!-- Travel Cards (These also populate the Globe!) -->
+      <article class="card" onclick="openModal(this)" data-lat="48.2082" data-lng="16.3738">
         <img src="https://images.unsplash.com/photo-1516550893923-42d28e5677af?auto=format&fit=crop&w=800&q=80" alt="Vienna" class="card-image">
         <div class="card-body">
           <div class="meta-tag">
@@ -399,7 +422,7 @@ I will never forget the coffee we had at that small corner cafe. We sat there fo
         </div>
       </article>
 
-      <article class="card" onclick="openModal(this)">
+      <article class="card" onclick="openModal(this)" data-lat="51.5074" data-lng="-0.1278">
         <img src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80" alt="London" class="card-image">
         <div class="card-body">
           <div class="meta-tag">
@@ -502,6 +525,30 @@ I remember looking at you while you were reading the map, looking so confused, a
   </div>
 
   <script>
+    // --- GLOBAL VARIABLES ---
+    let globeInitialized = false;
+    const travelData = [
+      // The globe uses this data. I've matched it to your cards.
+      {
+        lat: 48.2082, 
+        lng: 16.3738, 
+        label: "Vienna", 
+        title: "Our first big trip",
+        img: "https://images.unsplash.com/photo-1516550893923-42d28e5677af?auto=format&fit=crop&w=800&q=80",
+        meta: "Vienna, Austria · April 2025",
+        desc: "We finally made it! The streets were beautiful and we walked for hours. I will never forget the coffee we had at that small corner cafe."
+      },
+      {
+        lat: 51.5074, 
+        lng: -0.1278, 
+        label: "London",
+        title: "New Year's in London",
+        img: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80",
+        meta: "London, UK · Jan 2025",
+        desc: "It was freezing cold but your hand was warm. We watched the fireworks from a distance because the crowd was too crazy. Happy new year to us."
+      }
+    ];
+
     // --- FUNCTIONS ---
 
     // 1. Tab Switching Logic
@@ -514,56 +561,90 @@ I remember looking at you while you were reading the map, looking so confused, a
       
       if(selectedTab) selectedTab.classList.add('active');
       if(selectedBtn) selectedBtn.classList.add('active');
+
+      // Init globe if we switched to travel tab
+      if (tabName === 'travel' && !globeInitialized) {
+        // Slight delay to let the div become visible first
+        setTimeout(initGlobe, 100);
+      }
     }
 
-    // 2. Open Modal Logic (Lazy Fetching)
+    // 2. Globe Logic
+    function initGlobe() {
+      if (typeof Globe === 'undefined') return; // Safety check
+      
+      const globeElem = document.getElementById('globe-viz');
+      if (!globeElem) return;
+
+      const myGlobe = Globe()
+        .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+        .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
+        .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
+        .pointsData(travelData)
+        .pointColor(() => '#f43f5e') // Rose color
+        .pointAltitude(0.05)
+        .pointRadius(0.5)
+        .pointsMerge(true)
+        .pointLabel('label')
+        .onPointClick(d => openModalFromData(d)) // Open modal on click
+        (globeElem);
+
+      // Auto-rotate
+      myGlobe.controls().autoRotate = true;
+      myGlobe.controls().autoRotateSpeed = 0.5;
+
+      globeInitialized = true;
+    }
+
+    // 3. Open Modal Logic (From HTML Element)
     function openModal(element) {
-      // Fetch elements dynamically to ensure they exist
+      const modal = document.getElementById('modal-overlay');
+      if (!modal) return;
+
+      // Extract data
+      const img = element.querySelector('img');
+      const title = element.querySelector('.card-title, .food-title');
+      const meta = element.querySelector('.meta-tag, .food-loc');
+      const desc = element.querySelector('.card-text');
+      const hiddenDesc = element.querySelector('.hidden-desc');
+
+      // Populate
+      const data = {
+        img: img ? img.src : null,
+        title: title ? title.innerText : '',
+        meta: meta ? meta.innerText : '',
+        desc: desc ? desc.innerText : (hiddenDesc ? hiddenDesc.innerText : '')
+      };
+      
+      openModalFromData(data);
+    }
+
+    // 4. Open Modal Helper (From Data Object)
+    function openModalFromData(data) {
       const modal = document.getElementById('modal-overlay');
       const modalImg = document.getElementById('modal-img');
       const modalMeta = document.getElementById('modal-meta');
       const modalTitle = document.getElementById('modal-title');
       const modalDesc = document.getElementById('modal-desc');
 
-      if (!modal) return; // Guard clause
+      if (!modal) return;
 
-      // 1. Image handling
-      const img = element.querySelector('img');
-      if (img && modalImg) {
-        modalImg.src = img.src;
+      if (data.img && modalImg) {
+        modalImg.src = data.img;
         modalImg.style.display = 'block';
       } else if (modalImg) {
         modalImg.style.display = 'none';
       }
 
-      // 2. Title handling
-      const title = element.querySelector('.card-title, .food-title');
-      if (title && modalTitle) modalTitle.innerText = title.innerText;
+      if (modalTitle) modalTitle.innerText = data.title || '';
+      if (modalMeta) modalMeta.innerText = data.meta || '';
+      if (modalDesc) modalDesc.innerText = data.desc || '';
 
-      // 3. Meta handling
-      const meta = element.querySelector('.meta-tag, .food-loc');
-      if (meta && modalMeta) modalMeta.innerText = meta.innerText;
-
-      // 4. Description handling
-      const desc = element.querySelector('.card-text');
-      const hiddenDesc = element.querySelector('.hidden-desc');
-      
-      if (modalDesc) {
-        if (desc) {
-          modalDesc.innerText = desc.innerText;
-        } else if (hiddenDesc) {
-          modalDesc.innerText = hiddenDesc.innerText;
-        } else {
-          modalDesc.innerText = "";
-        }
-      }
-
-      // Show Modal
       modal.classList.add('open');
       document.body.style.overflow = 'hidden';
     }
 
-    // 3. Close Modal Logic
+    // 5. Close Modal Logic
     function closeModal(event) {
       const modal = document.getElementById('modal-overlay');
       if (!modal) return;
@@ -574,7 +655,7 @@ I remember looking at you while you were reading the map, looking so confused, a
       }
     }
     
-    // 4. Days Together Calculation
+    // 6. Days Together Calculation
     function updateDaysCount() {
       const display = document.getElementById('days-display');
       if (!display) return;
@@ -588,15 +669,11 @@ I remember looking at you while you were reading the map, looking so confused, a
     }
 
     // --- EXECUTION ---
-    
-    // Run basic logic immediately
     updateDaysCount();
 
-    // Initialize icons safely
     if (typeof lucide !== 'undefined') {
       lucide.createIcons();
     } else {
-      // If script hasn't loaded yet, wait for window load
       window.addEventListener('load', function() {
         if (typeof lucide !== 'undefined') lucide.createIcons();
       });
@@ -604,7 +681,3 @@ I remember looking at you while you were reading the map, looking so confused, a
   </script>
 </body>
 </html>
-
-
-
-
