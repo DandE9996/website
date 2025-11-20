@@ -652,7 +652,7 @@
     <section id="tab-blog" class="tab-content">
       <div class="section-header">
         <h2>我们的日记</h2>
-        <p>点击阅读全文。</p>
+        <p></p>
       </div>
 
       <article class="card" onclick="openModal(this)">
@@ -775,7 +775,7 @@
         document.getElementById('food-stage').innerHTML = `
             <div class="food-placeholder">
                 <i data-lucide="calendar" width="48" height="48" style="margin-bottom:12px; opacity:0.3;"></i>
-                <p>请选择一个年份开始</p>
+                <p>想看哪天的？</p>
             </div>
         `;
         lucide.createIcons();
@@ -807,7 +807,7 @@
         document.getElementById('food-stage').innerHTML = `
             <div class="food-placeholder">
                 <i data-lucide="calendar-days" width="48" height="48" style="margin-bottom:12px; opacity:0.3;"></i>
-                <p>请选择 ${year}年的月份</p>
+                <p>选择 ${year}年的月份</p>
             </div>
         `;
         lucide.createIcons();
@@ -1170,5 +1170,6 @@
   </script>
 </body>
 </html>
+
 
 
