@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
   <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
-  
   <script src="//unpkg.com/globe.gl"></script>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,14 +15,14 @@
   <style>
     /* --- CSS STYLES --- */
     :root {
-      --bg-color: #fafaf9;       
-      --card-bg: #ffffff;        
-      --text-main: #292524;      
-      --text-muted: #78716c;     
-      --rose-primary: #f43f5e;   
-      --rose-light: #ffe4e6;     
-      --rose-dark: #be123c;      
-      --border-color: #e7e5e4;   
+      --bg-color: #fafaf9;        
+      --card-bg: #ffffff;         
+      --text-main: #292524;       
+      --text-muted: #78716c;      
+      --rose-primary: #f43f5e;    
+      --rose-light: #ffe4e6;      
+      --rose-dark: #be123c;       
+      --border-color: #e7e5e4;    
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -31,10 +30,9 @@
     body {
       background-color: var(--bg-color);
       color: var(--text-main);
-      /* Added Noto Sans SC for better Chinese rendering */
       font-family: 'Inter', 'Noto Sans SC', sans-serif;
       line-height: 1.6;
-      overflow-x: hidden; /* Prevent horizontal scroll */
+      overflow-x: hidden;
     }
 
     /* HEADER */
@@ -109,9 +107,7 @@
     .nav-btn.active { background-color: var(--rose-light); color: var(--rose-dark); }
 
     /* MAIN LAYOUT */
-    main {
-      position: relative;
-    }
+    main { position: relative; }
 
     /* TAB CONTENT */
     .tab-content {
@@ -138,7 +134,6 @@
       margin: 0;
       max-width: none;
       background-color: #000;
-      /* Fallback image */
       background-image: url('https://images.unsplash.com/photo-1519681393798-3828fb4090bb?auto=format&fit=crop&w=1920&q=80'); 
       background-size: cover;
       background-position: center;
@@ -169,7 +164,6 @@
       backdrop-filter: blur(4px);
       transition: all 0.2s ease;
     }
-    
     .close-fullscreen-btn:hover {
       background: rgba(255, 255, 255, 0.2);
       border-color: rgba(255, 255, 255, 0.4);
@@ -232,7 +226,7 @@
     .hero-text { font-size: 1.25rem; font-weight: 400; opacity: 0.9; }
     .hero-subtext { font-size: 0.9rem; opacity: 0.8; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; }
 
-    /* GLOBE CONTAINER */
+    /* GLOBE */
     #globe-viz {
       width: 100%;
       height: 100%; 
@@ -245,14 +239,12 @@
       cursor: grab; 
     }
     
-    /* MAP PIN STYLING FOR GLOBE */
     .map-pin {
-        color: #f43f5e; /* Rose color */
+        color: #f43f5e; 
         transition: all 0.3s ease;
         cursor: pointer;
         filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
     }
-    
     .map-pin:hover {
         transform: scale(1.3) translateY(-5px);
         color: #fff;
@@ -260,12 +252,12 @@
         z-index: 1000;
     }
 
-    /* CARDS */
+    /* GENERAL CARDS (Blog, etc) */
     .section-header { margin-bottom: 24px; text-align: center; }
     .section-header h2 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 8px; color: var(--text-main); }
     .section-header p { color: var(--text-muted); }
 
-    .card, .food-card {
+    .card {
       background: var(--card-bg);
       border-radius: 16px;
       border: 1px solid var(--border-color);
@@ -276,18 +268,15 @@
       cursor: pointer;
       position: relative;
     }
-    
-    .card:hover, .food-card:hover { 
+    .card:hover { 
       transform: translateY(-5px); 
       box-shadow: 0 12px 24px rgba(0,0,0,0.1); 
       border-color: var(--rose-light);
     }
-
-    .card::after, .food-card::after {
-      content: '点击查看'; /* Translated from 'Click to view' */
+    .card::after {
+      content: '点击查看'; 
       position: absolute;
-      top: 12px;
-      right: 12px;
+      top: 12px; right: 12px;
       background: rgba(255,255,255,0.9);
       padding: 4px 12px;
       border-radius: 20px;
@@ -298,109 +287,197 @@
       font-weight: 600;
       color: var(--text-muted);
     }
-    .card:hover::after, .food-card:hover::after { opacity: 1; }
-
-    .card-image { width: 100%; height: 300px; object-fit: cover; }
+    .card:hover::after { opacity: 1; }
     .card-body { padding: 24px; }
-
     .meta-tag {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--rose-primary);
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 12px;
+      display: flex; align-items: center; gap: 6px;
+      color: var(--rose-primary); font-size: 0.8rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;
     }
-
     .card-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: var(--text-main);
+      font-family: 'Playfair Display', serif; font-size: 1.5rem;
+      font-weight: 700; margin-bottom: 12px; color: var(--text-main);
     }
-    
     .card-text { 
-      color: #44403c; 
-      white-space: pre-wrap;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+      color: #44403c; white-space: pre-wrap;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
     }
 
-    /* FOOD GRID */
-    .food-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
-    }
+    /* --- NEW TIMELINE FOOD STYLES --- */
     
-    .food-image { width: 100%; height: 220px; object-fit: cover; }
-    .food-content { padding: 16px; }
-    .food-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.1rem; margin-bottom: 4px; }
-    .food-loc { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+    .timeline-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        min-height: 500px;
+    }
+
+    /* 1. Timeline Navigation Area */
+    .timeline-nav {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        text-align: center;
+    }
+
+    .timeline-breadcrumbs {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    .crumb-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--rose-primary);
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 8px;
+        transition: background 0.2s;
+    }
+    .crumb-btn:hover { background: var(--rose-light); }
+    .crumb-sep { color: #d1d5db; }
+    .crumb-current { color: var(--text-main); font-weight: 500; }
+
+    /* The Scrollable Track */
+    .timeline-track {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        overflow-x: auto;
+        padding: 10px 4px;
+        scrollbar-width: none; /* Hide scrollbar firefox */
+    }
+    .timeline-track::-webkit-scrollbar { display: none; }
+
+    /* The Clickable Nodes (Years, Months, Days) */
+    .timeline-node {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: var(--bg-color);
+        border: 2px solid var(--border-color);
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+    }
+
+    .timeline-node:hover {
+        transform: translateY(-5px);
+        border-color: var(--rose-primary);
+        background: #fff;
+    }
+
+    .timeline-node.active {
+        background: var(--rose-primary);
+        color: white;
+        border-color: var(--rose-primary);
+        transform: scale(1.1);
+        box-shadow: 0 10px 25px rgba(244, 63, 94, 0.3);
+    }
+
+    .node-label { font-weight: 700; font-size: 1rem; line-height: 1; }
+    .node-sub { font-size: 0.7rem; opacity: 0.8; margin-top: 2px; font-weight: 400; }
+
+    /* 2. Display Stage */
+    .food-stage {
+        position: relative;
+        width: 100%;
+        min-height: 350px;
+        display: flex;
+        justify-content: center;
+        align-items: start;
+        perspective: 1000px; /* For 3D flip effect */
+    }
+
+    .food-placeholder {
+        text-align: center;
+        color: var(--text-muted);
+        margin-top: 40px;
+        animation: fadeIn 0.5s ease;
+    }
+
+    /* The Food Card Display */
+    .food-display-card {
+        background: white;
+        width: 100%;
+        max-width: 500px;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        border: 1px solid var(--border-color);
+        animation: floatUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+
+    .food-display-card:hover { transform: translateY(-5px); }
+
+    .fd-img {
+        width: 100%;
+        height: 280px;
+        object-fit: cover;
+    }
+
+    .fd-content { padding: 24px; position: relative; }
+    .fd-date {
+        position: absolute;
+        top: -20px;
+        right: 24px;
+        background: var(--rose-primary);
+        color: white;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        box-shadow: 0 4px 10px rgba(244, 63, 94, 0.3);
+    }
+
+    @keyframes floatUp {
+        0% { opacity: 0; transform: translateY(40px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
 
     /* MODAL POPUP */
     .modal-overlay {
       display: none;
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       background: rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(4px);
       z-index: 1000;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
+      justify-content: center; align-items: center;
+      padding: 20px; opacity: 0; transition: opacity 0.3s ease;
     }
-
-    .modal-overlay.open {
-      display: flex;
-      opacity: 1;
-    }
-
+    .modal-overlay.open { display: flex; opacity: 1; }
     .modal-container {
-      background: white;
-      width: 100%;
-      max-width: 700px;
-      max-height: 90vh;
-      border-radius: 20px;
-      overflow-y: auto;
-      position: relative;
+      background: white; width: 100%; max-width: 700px; max-height: 90vh;
+      border-radius: 20px; overflow-y: auto; position: relative;
       box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-      transform: scale(0.9);
-      transition: transform 0.3s ease;
+      transform: scale(0.9); transition: transform 0.3s ease;
     }
-
     .modal-overlay.open .modal-container { transform: scale(1); }
-
     .modal-close {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      background: rgba(255,255,255,0.9);
-      border: none;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
-      transition: background 0.2s;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      position: absolute; top: 16px; right: 16px;
+      background: rgba(255,255,255,0.9); border: none; width: 40px; height: 40px;
+      border-radius: 50%; cursor: pointer; display: flex;
+      align-items: center; justify-content: center; z-index: 10;
+      transition: background 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .modal-close:hover { background: white; transform: scale(1.05); }
-
     .modal-img { width: 100%; height: auto; max-height: 500px; object-fit: cover; display: none; }
     .modal-body { padding: 32px; }
     .modal-meta { color: var(--rose-primary); font-weight: 600; font-size: 0.9rem; margin-bottom: 8px; text-transform: uppercase; }
@@ -408,12 +485,8 @@
     .modal-desc { font-size: 1.1rem; color: #333; line-height: 1.8; white-space: pre-wrap; }
 
     footer {
-      text-align: center;
-      padding: 40px 0;
-      color: var(--text-muted);
-      font-size: 0.875rem;
-      margin-top: 48px;
-      border-top: 1px solid var(--border-color);
+      text-align: center; padding: 40px 0; color: var(--text-muted);
+      font-size: 0.875rem; margin-top: 48px; border-top: 1px solid var(--border-color);
     }
   </style>
 </head>
@@ -446,7 +519,7 @@
     
     <section id="tab-home" class="tab-content active">
       <div class="hero-container">
-        <img src="pics/london.jpg" alt="Us" class="hero-bg-image">
+        <img src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1600&q=80" alt="Us" class="hero-bg-image">
         
         <div class="hero-overlay">
           <div class="hero-heart">
@@ -463,52 +536,39 @@
       </div>
     </section>
 
-
     <section id="tab-travel" class="tab-content fullscreen-tab">
       <button class="close-fullscreen-btn" onclick="switchTab('home')">
         <i data-lucide="arrow-left" width="20"></i> 返回首页
       </button>
-      
       <div id="globe-viz"></div>
     </section>
 
-
     <section id="tab-food" class="tab-content">
       <div class="section-header">
-        <h2>我们的美食地图</h2>
-        <p>点击查看美味详情。</p>
+        <h2>我们的美食时光轴</h2>
+        <p>选择年份和月份，重温那些美味的瞬间。</p>
       </div>
 
-      <div class="food-grid">
-        <div class="food-card" onclick="openModal(this)">
-          <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=60" alt="Pizza" class="food-image">
-          <div class="food-content">
-            <h3 class="food-title">深夜披萨</h3>
-            <div class="food-loc"><i data-lucide="map-pin" width="12"></i> 马里奥餐厅</div>
-            <div style="display:none;" class="hidden-desc">这绝对是我们吃过最好吃的披萨。当时是凌晨2点，我们快饿疯了！</div>
-          </div>
+      <div class="timeline-wrapper">
+        
+        <div class="timeline-nav">
+            <div id="timeline-breadcrumbs" class="timeline-breadcrumbs">
+                <span class="crumb-current">请选择年份</span>
+            </div>
+            
+            <div id="timeline-track" class="timeline-track">
+                </div>
         </div>
 
-        <div class="food-card" onclick="openModal(this)">
-          <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=600&q=60" alt="Sushi" class="food-image">
-          <div class="food-content">
-            <h3 class="food-title">寿司约会</h3>
-            <div class="food-loc"><i data-lucide="map-pin" width="12"></i> 东京市中心</div>
-            <div style="display:none;" class="hidden-desc">第一次尝试海胆。你讨厌它，但我爱死它了。</div>
-          </div>
+        <div id="food-stage" class="food-stage">
+            <div class="food-placeholder">
+                <i data-lucide="utensils-crossed" width="48" height="48" style="margin-bottom:12px; opacity:0.3;"></i>
+                <p>点击上方时间轴探索我们的美食之旅</p>
+            </div>
         </div>
 
-        <div class="food-card" onclick="openModal(this)">
-          <img src="https://images.unsplash.com/photo-1563379926898-05f4575a45d8?auto=format&fit=crop&w=600&q=60" alt="Pasta" class="food-image">
-          <div class="food-content">
-            <h3 class="food-title">自制意面</h3>
-            <div class="food-loc"><i data-lucide="home" width="12"></i> 家里</div>
-            <div style="display:none;" class="hidden-desc">我们在厨房搞得一团糟，但做出来的意面竟然出奇地好吃。</div>
-          </div>
-        </div>
       </div>
     </section>
-
 
     <section id="tab-blog" class="tab-content">
       <div class="section-header">
@@ -548,9 +608,7 @@
       <button class="modal-close" onclick="closeModal(event)">
         <i data-lucide="x" width="24"></i>
       </button>
-      
       <img id="modal-img" class="modal-img" src="" alt="">
-      
       <div class="modal-body">
         <div id="modal-meta" class="modal-meta"></div>
         <h2 id="modal-title" class="modal-title"></h2>
@@ -560,105 +618,234 @@
   </div>
 
   <script>
-    // --- GLOBAL VARIABLES ---
+    // --- 1. GLOBAL STATE & DATA ---
     let globeInitialized = false;
     let myGlobeInstance = null; 
-    
-    // DATA: Translated Travel Data
+
+    // TRAVEL DATA (Translated)
     const travelData = [
       {
-        lat: 48.2082, 
-        lng: 16.3738, 
-        label: "Vienna", 
+        lat: 48.2082, lng: 16.3738, label: "Vienna", 
         title: "我们的第一次长途旅行",
         img: "https://images.unsplash.com/photo-1516550893923-42d28e5677af?auto=format&fit=crop&w=800&q=80",
         meta: "奥地利维也纳 · 2025年4月",
-        desc: "我们终于到了！街道很美，我们走了好几个小时。我永远不会忘记我们在那个街角小咖啡馆喝的咖啡。我们坐在那里两个小时，只是看着人来人往。"
+        desc: "我们终于到了！街道很美，我们走了好几个小时。我永远不会忘记我们在那个街角小咖啡馆喝的咖啡。"
       },
       {
-        lat: 51.5074, 
-        lng: -0.1278, 
-        label: "London",
+        lat: 51.5074, lng: -0.1278, label: "London", 
         title: "伦敦跨年",
         img: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80",
         meta: "英国伦敦 · 2025年1月",
         desc: "天气冷极了，但你的手很暖。因为人太多太疯狂，我们只能远远地看烟花。祝我们新年快乐。"
       },
-      {
-        lat: 34.746613,
-        lng: 113.625328,
-        label: "Zhengzhou",
-        title: "郑州的天空",
-        img: "",
-        meta: "中国郑州",
-        desc: "尘土飞扬的天空，繁忙的街道，但我们不知怎么还是找到了一个属于我们的安静角落。我们漫无目的地走着，聊着一切，又好像什么都没聊。"
-      },
-      {
-        lat: 32.049999,
-        lng: 118.766670,
-        label: "Nanjing",
-        title: "南京的午后时光",
-        img: "",
-        meta: "中国南京",
-        desc: "林荫大道，古老的城墙，感觉这座城市有一百个故事想告诉我们。我们看着城墙后的日落，分吃着烤红薯。"
-      },
-      {
-        lat: 27.825110,
-        lng: 99.707790,
-        label: "Shangri-La",
-        title: "高海拔，轻声笑语",
-        img: "",
-        meta: "中国香格里拉",
-        desc: "清冷的空气，温暖的脸颊，还有头顶飘扬的经幡。你一直问我有没有高原反应，但老实说，我觉得让我心跳加速的只是你。"
-      },
-      {
-        lat: 26.865118,
-        lng: 100.229301,
-        label: "Lijiang",
-        title: "丽江夜色",
-        img: "",
-        meta: "中国丽江",
-        desc: "灯笼倒映在水中，音乐飘荡在街道上。我们在巷子里迷路了一次又一次，但总能找到回到彼此身边的路。"
-      },
-      {
-        lat: 25.702600,
-        lng: 100.155400,
-        label: "Dali",
-        title: "风、湖泊与山峦",
-        img: "",
-        meta: "中国大理",
-        desc: "洱海的风比我们想象的要冷，但我们还是裹着同一条围巾沿岸漫步。苍山静静地注视着我们许下新的小承诺。"
-      },
-      {
-        lat: 31.224361,
-        lng: 121.469170,
-        label: "Shanghai",
-        title: "上海霓虹",
-        img: "",
-        meta: "中国上海",
-        desc: "霓虹闪烁，人潮拥挤，而江水却让整座城市显得格外平静。我们站在外滩，畅想着未来还要一起去的所有地方。"
-      },
-      {
-        lat: 50.073658,
-        lng: 14.418540,
-        label: "Prague",
-        title: "布拉格的桥",
-        img: "",
-        meta: "捷克布拉格",
-        desc: "鹅卵石街道，古老的桥梁，还有深夜里我们回荡的脚步声。你不停地停下来拍照，而我一直在偷偷拍你。"
-      },
-      {
-        lat: 48.864716,
-        lng: 2.349014,
-        label: "Paris",
-        title: "巴黎之夜",
-        img: "",
-        meta: "法国巴黎",
-        desc: "我们不需要埃菲尔铁塔的完美视角，也不需要完美的咖啡馆。只需要一张长椅，一块点心，你牵着我的手，突然间这座城市真的感觉是为爱而生的。"
-      }
+      { lat: 34.746613, lng: 113.625328, label: "Zhengzhou", title: "郑州的天空", img: "", meta: "中国郑州", desc: "尘土飞扬的天空，繁忙的街道，但我们不知怎么还是找到了一个属于我们的安静角落。" },
+      { lat: 32.049999, lng: 118.766670, label: "Nanjing", title: "南京的午后时光", img: "", meta: "中国南京", desc: "林荫大道，古老的城墙，感觉这座城市有一百个故事想告诉我们。" },
+      { lat: 27.825110, lng: 99.707790, label: "Shangri-La", title: "高海拔，轻声笑语", img: "", meta: "中国香格里拉", desc: "清冷的空气，温暖的脸颊，还有头顶飘扬的经幡。" },
+      { lat: 26.865118, lng: 100.229301, label: "Lijiang", title: "丽江夜色", img: "", meta: "中国丽江", desc: "灯笼倒映在水中，音乐飘荡在街道上。我们在巷子里迷路了一次又一次，但总能找到回到彼此身边的路。" },
+      { lat: 25.702600, lng: 100.155400, label: "Dali", title: "风、湖泊与山峦", img: "", meta: "中国大理", desc: "洱海的风比我们想象的要冷，但我们还是裹着同一条围巾沿岸漫步。" },
+      { lat: 31.224361, lng: 121.469170, label: "Shanghai", title: "上海霓虹", img: "", meta: "中国上海", desc: "霓虹闪烁，人潮拥挤，而江水却让整座城市显得格外平静。" },
+      { lat: 50.073658, lng: 14.418540, label: "Prague", title: "布拉格的桥", img: "", meta: "捷克布拉格", desc: "鹅卵石街道，古老的桥梁，还有深夜里我们回荡的脚步声。" },
+      { lat: 48.864716, lng: 2.349014, label: "Paris", title: "巴黎之夜", img: "", meta: "法国巴黎", desc: "我们不需要埃菲尔铁塔的完美视角，也不需要完美的咖啡馆。只需要一张长椅，一块点心。" }
     ];
 
-    // --- FUNCTIONS ---
+    // FOOD TIMELINE DATA (Starts Dec 2024)
+    const foodData = [
+        { date: '2024-12-24', title: "圣诞前夜大餐", loc: "家中", img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=60", desc: "我们尝试自己烤火鸡，虽然有点焦，但红酒很好喝。" },
+        { date: '2024-12-31', title: "跨年火锅", loc: "海底捞", img: "https://images.unsplash.com/photo-1625642669728-d30b93166326?auto=format&fit=crop&w=600&q=60", desc: "热气腾腾的火锅，迎接新的一年。你说只要有火锅，哪里都是家。" },
+        { date: '2025-01-08', title: "纪念日蛋糕", loc: "甜品店", img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=600&q=60", desc: "这是我们正式在一起的第一天，这块草莓蛋糕甜得刚刚好。" },
+        { date: '2025-01-15', title: "深夜披萨", loc: "马里奥餐厅", img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=60", desc: "这绝对是我们吃过最好吃的披萨。当时是凌晨2点，我们快饿疯了！" },
+        { date: '2025-02-14', title: "情人节寿司", loc: "东京市中心", img: "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=600&q=60", desc: "第一次尝试海胆。你讨厌它，但我爱死它了。" },
+        { date: '2025-03-20', title: "自制意面", loc: "家里", img: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?auto=format&fit=crop&w=600&q=60", desc: "我们在厨房搞得一团糟，但做出来的意面竟然出奇地好吃。" },
+        { date: '2025-04-05', title: "街头小吃", loc: "维也纳市场", img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=60", desc: "烤香肠和啤酒。简单的快乐。" }
+    ];
+
+    // --- 2. TIMELINE LOGIC ---
+    const timelineState = {
+        view: 'years', // 'years', 'months', 'days'
+        selectedYear: null,
+        selectedMonth: null
+    };
+
+    function initTimeline() {
+        renderYears();
+    }
+
+    function renderYears() {
+        timelineState.view = 'years';
+        timelineState.selectedYear = null;
+        timelineState.selectedMonth = null;
+        updateBreadcrumbs();
+
+        const track = document.getElementById('timeline-track');
+        track.innerHTML = '';
+        
+        // Extract unique years
+        const years = [...new Set(foodData.map(d => d.date.split('-')[0]))].sort();
+
+        years.forEach(year => {
+            const node = createNode(year + '年', '点击查看月份');
+            node.onclick = () => {
+                timelineState.selectedYear = year;
+                renderMonths(year);
+            };
+            track.appendChild(node);
+        });
+        
+        // Reset stage
+        document.getElementById('food-stage').innerHTML = `
+            <div class="food-placeholder">
+                <i data-lucide="calendar" width="48" height="48" style="margin-bottom:12px; opacity:0.3;"></i>
+                <p>请选择一个年份开始</p>
+            </div>
+        `;
+        lucide.createIcons();
+    }
+
+    function renderMonths(year) {
+        timelineState.view = 'months';
+        updateBreadcrumbs();
+
+        const track = document.getElementById('timeline-track');
+        track.innerHTML = '';
+
+        // Extract months for this year
+        const months = [...new Set(foodData
+            .filter(d => d.date.startsWith(year))
+            .map(d => d.date.split('-')[1])
+        )].sort();
+
+        months.forEach(month => {
+            const node = createNode(parseInt(month) + '月', '查看日期');
+            node.onclick = () => {
+                timelineState.selectedMonth = month;
+                renderDays(year, month);
+            };
+            track.appendChild(node);
+        });
+
+        // Reset stage
+        document.getElementById('food-stage').innerHTML = `
+            <div class="food-placeholder">
+                <i data-lucide="calendar-days" width="48" height="48" style="margin-bottom:12px; opacity:0.3;"></i>
+                <p>请选择 ${year}年的月份</p>
+            </div>
+        `;
+        lucide.createIcons();
+    }
+
+    function renderDays(year, month) {
+        timelineState.view = 'days';
+        updateBreadcrumbs();
+
+        const track = document.getElementById('timeline-track');
+        track.innerHTML = '';
+
+        // Extract specific entries for this Y-M
+        const dayEntries = foodData.filter(d => d.date.startsWith(`${year}-${month}`));
+        
+        // Sort by day
+        dayEntries.sort((a, b) => a.date.localeCompare(b.date));
+
+        dayEntries.forEach((entry, index) => {
+            const dayNum = entry.date.split('-')[2];
+            const node = createNode(parseInt(dayNum) + '日', '美味记忆');
+            
+            // Auto-select first one or handle click
+            node.onclick = () => {
+                // remove active class from others
+                document.querySelectorAll('.timeline-node').forEach(n => n.classList.remove('active'));
+                node.classList.add('active');
+                renderFoodCard(entry);
+            };
+            
+            track.appendChild(node);
+        });
+        
+        // Automatically show the first one
+        if(track.firstChild) {
+            track.firstChild.click();
+        }
+    }
+
+    function renderFoodCard(data) {
+        const stage = document.getElementById('food-stage');
+        stage.innerHTML = ''; // Clear previous
+
+        const card = document.createElement('div');
+        card.className = 'food-display-card';
+        card.onclick = () => openModalFromData(data); // Allow clicking to expand
+
+        card.innerHTML = `
+            <img src="${data.img}" class="fd-img" alt="${data.title}">
+            <div class="fd-content">
+                <div class="fd-date">${data.date}</div>
+                <h3 class="card-title" style="font-size:1.8rem;">${data.title}</h3>
+                <div class="food-loc" style="margin-bottom:16px;">
+                    <i data-lucide="map-pin" width="16"></i> ${data.loc}
+                </div>
+                <p class="card-text">${data.desc}</p>
+            </div>
+        `;
+        stage.appendChild(card);
+        lucide.createIcons();
+    }
+
+    function createNode(mainText, subText) {
+        const el = document.createElement('div');
+        el.className = 'timeline-node';
+        el.innerHTML = `
+            <span class="node-label">${mainText}</span>
+            <span class="node-sub">${subText}</span>
+        `;
+        return el;
+    }
+
+    function updateBreadcrumbs() {
+        const bc = document.getElementById('timeline-breadcrumbs');
+        bc.innerHTML = '';
+
+        // Home / Reset
+        const btnReset = document.createElement('button');
+        btnReset.className = 'crumb-btn';
+        btnReset.innerText = '全部年份';
+        btnReset.onclick = renderYears;
+        bc.appendChild(btnReset);
+
+        if (timelineState.selectedYear) {
+            addSep(bc);
+            if (timelineState.view === 'years') {
+                 addText(bc, timelineState.selectedYear + '年');
+            } else {
+                 const btnYear = document.createElement('button');
+                 btnYear.className = 'crumb-btn';
+                 btnYear.innerText = timelineState.selectedYear + '年';
+                 btnYear.onclick = () => renderMonths(timelineState.selectedYear);
+                 bc.appendChild(btnYear);
+            }
+        }
+
+        if (timelineState.selectedMonth) {
+            addSep(bc);
+            addText(bc, parseInt(timelineState.selectedMonth) + '月');
+        }
+    }
+
+    function addSep(parent) {
+        const span = document.createElement('span');
+        span.className = 'crumb-sep';
+        span.innerText = '/';
+        parent.appendChild(span);
+    }
+
+    function addText(parent, text) {
+        const span = document.createElement('span');
+        span.className = 'crumb-current';
+        span.innerText = text;
+        parent.appendChild(span);
+    }
+
+
+    // --- 3. NAVIGATION & GENERAL LOGIC ---
 
     function switchTab(tabName) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -670,79 +857,56 @@
       if (selectedTab) selectedTab.classList.add('active');
       if (selectedBtn) selectedBtn.classList.add('active');
 
+      // Specific Logic per Tab
       if (tabName === 'travel') {
-        // Initialize globe if first time
-        if (!globeInitialized) {
-          setTimeout(initGlobe, 50);
-        }
-        document.body.style.overflow = 'hidden'; // Prevent background scroll
+        if (!globeInitialized) setTimeout(initGlobe, 50);
+        document.body.style.overflow = 'hidden';
       } else {
-        document.body.style.overflow = ''; // Re-enable scroll
+        document.body.style.overflow = '';
+      }
+
+      if (tabName === 'food') {
+          // Initialize timeline if entering food tab
+          initTimeline();
       }
     }
 
     function initGlobe() {
       if (typeof Globe === 'undefined') return; 
-      
       const globeContainer = document.getElementById('globe-viz');
       if (!globeContainer) return;
-
       const w = globeContainer.clientWidth;
       const h = globeContainer.clientHeight;
 
-      // Fetch Countries GeoJSON for the cool vector look
       fetch('https://raw.githubusercontent.com/vasturiano/globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson')
         .then(res => res.json())
         .then(countries => {
-          
           myGlobeInstance = Globe()
-            .width(w)
-            .height(h)
-            .backgroundColor('rgba(0,0,0,0)') // Transparent for star background
-
-            // ENHANCED EARTH STYLING
-            .showGlobe(true)
-            .showGraticules(true)
-            .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg') // Night texture
-            .showAtmosphere(true) 
-            .atmosphereColor('#38bdf8') 
-            .atmosphereAltitude(0.22) 
-
-            // Landmasses: thin neon outline
+            .width(w).height(h)
+            .backgroundColor('rgba(0,0,0,0)')
+            .showGlobe(true).showGraticules(true)
+            .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
+            .showAtmosphere(true).atmosphereColor('#38bdf8').atmosphereAltitude(0.22)
             .polygonsData(countries.features)
             .polygonCapColor(() => 'rgba(56, 189, 248, 0.15)')
             .polygonSideColor(() => 'rgba(37, 99, 235, 0.55)')
             .polygonStrokeColor(() => 'rgba(125, 211, 252, 0.85)')
             .polygonAltitude(0.02)
-            
-            // ANIMATED RINGS (Ripple Effect)
             .ringsData(travelData)
             .ringColor(() => 'rgba(248, 250, 252, 0.45)')
-            .ringMaxRadius(3.5)
-            .ringPropagationSpeed(2.5)
-            .ringRepeatPeriod(900)
-            
-            // *** CHANGED FROM LABELS TO HTML ELEMENTS (PINS) ***
+            .ringMaxRadius(3.5).ringPropagationSpeed(2.5).ringRepeatPeriod(900)
             .htmlElementsData(travelData)
             .htmlElement(d => {
                 const el = document.createElement('div');
-                // SVG PIN ICON
                 el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="map-pin"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3" fill="white" stroke="none"/></svg>`;
-                
                 el.style.width = '32px'; 
-                // Center the tip of the pin at the coordinate
                 el.style.transform = 'translate(-50%, -100%)'; 
                 el.style.cursor = 'pointer';
-                el.style.pointerEvents = 'auto'; // Ensure click is captured
-                
-                // Handle Click
+                el.style.pointerEvents = 'auto'; 
                 el.onclick = () => openModalFromData(d);
-                
                 return el;
             })
-            
             (globeContainer);
-
           myGlobeInstance.controls().autoRotate = true;
           myGlobeInstance.controls().autoRotateSpeed = 0.6;
         });
@@ -753,27 +917,23 @@
            myGlobeInstance.height(globeContainer.clientHeight);
          }
       });
-
       globeInitialized = true;
     }
 
     function openModal(element) {
       const modal = document.getElementById('modal-overlay');
       if (!modal) return;
-
       const img = element.querySelector('img');
-      const title = element.querySelector('.card-title, .food-title');
-      const meta = element.querySelector('.meta-tag, .food-loc');
+      const title = element.querySelector('.card-title');
+      const meta = element.querySelector('.meta-tag');
       const desc = element.querySelector('.card-text');
-      const hiddenDesc = element.querySelector('.hidden-desc');
-
+      
       const data = {
         img: img ? img.src : null,
         title: title ? title.innerText : '',
         meta: meta ? meta.innerText : '',
-        desc: desc ? desc.innerText : (hiddenDesc ? hiddenDesc.innerText : '')
+        desc: desc ? desc.innerText : ''
       };
-      
       openModalFromData(data);
     }
 
@@ -783,18 +943,16 @@
       const modalMeta = document.getElementById('modal-meta');
       const modalTitle = document.getElementById('modal-title');
       const modalDesc = document.getElementById('modal-desc');
-
       if (!modal) return;
 
       if (data.img && modalImg) {
-        modalImg.src = data.img;
-        modalImg.style.display = 'block';
+        modalImg.src = data.img; modalImg.style.display = 'block';
       } else if (modalImg) {
         modalImg.style.display = 'none';
       }
 
       if (modalTitle) modalTitle.innerText = data.title || data.label || '';
-      if (modalMeta) modalMeta.innerText = data.meta || '';
+      if (modalMeta) modalMeta.innerText = data.meta || (data.date ? data.date : '');
       if (modalDesc) modalDesc.innerText = data.desc || '';
 
       modal.classList.add('open');
@@ -804,10 +962,8 @@
     function closeModal(event) {
       const modal = document.getElementById('modal-overlay');
       if (!modal) return;
-
       if (event.target === modal || event.currentTarget.classList.contains('modal-close')) {
         modal.classList.remove('open');
-        // Only reset overflow if we are NOT in travel tab
         const travelTab = document.getElementById('tab-travel');
         if (!travelTab.classList.contains('active')) {
            document.body.style.overflow = '';
@@ -818,25 +974,16 @@
     function updateDaysCount() {
       const display = document.getElementById('days-display');
       if (!display) return;
-      
       const startDate = new Date('2025-01-08'); 
       const today = new Date();
       const diffTime = Math.abs(today - startDate);
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      
       display.innerText = diffDays;
     }
 
     updateDaysCount();
-
-    if (typeof lucide !== 'undefined') {
-      lucide.createIcons();
-    } else {
-      window.addEventListener('load', function() {
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-      });
-    }
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+    else window.addEventListener('load', () => { if (typeof lucide !== 'undefined') lucide.createIcons(); });
   </script>
 </body>
 </html>
-
