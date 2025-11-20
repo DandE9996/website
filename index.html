@@ -1,270 +1,484 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Our Moments</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
+import React, { useState, useEffect } from 'react';
+import { initializeApp } from 'firebase/app';
+import { 
+  getAuth, 
+  signInWithCustomToken, 
+  signInAnonymously, 
+  onAuthStateChanged,
+  signOut
+} from 'firebase/auth';
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  query, 
+  onSnapshot, 
+  deleteDoc, 
+  doc, 
+  orderBy, 
+  serverTimestamp 
+} from 'firebase/firestore';
+import { 
+  Heart, 
+  Calendar, 
+  PenTool, 
+  Image as ImageIcon, 
+  Plus, 
+  Trash2, 
+  LogOut,
+  BookOpen,
+  Camera
+} from 'lucide-react';
 
-    body {
-      background: #f5f5f7;
-      color: #222;
-      line-height: 1.6;
-      padding: 24px;
-    }
+// --- Firebase Configuration ---
+const firebaseConfig = JSON.parse(__firebase_config);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
+// --- Main App Component ---
+export default function LoveLog() {
+  const [user, setUser] = useState(null);
+  const [view, setView] = useState('moments'); // 'moments' or 'blogs'
+  const [loading, setLoading] = useState(true);
+  
+  // Auth Initialization
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+      } catch (error) {
+        console.error("Auth error:", error);
+      }
+    };
+    initAuth();
+    
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    
+    return () => unsubscribe();
+  }, []);
 
-    header {
-      text-align: center;
-      margin-bottom: 40px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #e1e1e1;
-    }
-
-    header h1 {
-      font-size: 2.2rem;
-      margin-bottom: 8px;
-      color: #333;
-    }
-
-    header p {
-      font-size: 1rem;
-      color: #666;
-    }
-
-    nav {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      margin-top: 20px;
-    }
-
-    nav button {
-      padding: 8px 20px;
-      border-radius: 999px;
-      border: 1px solid transparent;
-      background: #e0e0e0;
-      color: #555;
-      cursor: pointer;
-      font-size: 0.95rem;
-      font-weight: 500;
-      transition: all 0.2s ease;
-    }
-
-    nav button:hover {
-      background: #d0d0d0;
-    }
-
-    nav button.active {
-      background: #222;
-      color: white;
-      border-color: #222;
-    }
-
-    .section {
-      display: none;
-      animation: fadeIn 0.4s ease;
-    }
-
-    .section.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 24px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      border: 1px solid #f0f0f0;
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid #f5f5f5;
-    }
-
-    .card-title {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #1a1a1a;
-    }
-
-    .card-date {
-      font-size: 0.85rem;
-      color: #888;
-      font-weight: 500;
-    }
-
-    /* Photo Grid Styles */
-    .photo-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 12px;
-    }
-
-    .photo-grid img {
-      width: 100%;
-      height: 200px;
-      border-radius: 8px;
-      object-fit: cover;
-      transition: transform 0.3s ease;
-      background-color: #eee; /* Placeholder color */
-    }
-
-    .photo-grid img:hover {
-      transform: scale(1.02);
-    }
-
-    /* Blog Styles */
-    .blog-content {
-      font-size: 1rem;
-      color: #444;
-      white-space: pre-line; /* Preserves line breaks */
-      line-height: 1.8;
-    }
-
-    footer {
-      text-align: center;
-      margin-top: 48px;
-      font-size: 0.8rem;
-      color: #999;
-    }
-
-    .hint-box {
-      background: #fff8e1;
-      border: 1px solid #ffe082;
-      color: #8d6e08;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      font-size: 0.9rem;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <header>
-      <h1>Our Story</h1>
-      <p>Collecting moments, one month at a time.</p>
-
-      <nav>
-        <button id="tab-photos" class="active">Photo Timeline</button>
-        <button id="tab-blogs">Journal</button>
-      </nav>
-    </header>
-
-    <main>
-      <!-- Photos Section -->
-      <section id="section-photos" class="section active">
-        <div class="hint-box">
-          <strong>How to update:</strong> Open this file in a code editor. Copy a "card" block below, and change the text and image links to your own photos.
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-rose-50">
+        <div className="text-rose-500 animate-pulse">
+          <Heart className="w-12 h-12 fill-current" />
         </div>
+      </div>
+    );
+  }
 
-        <!-- Month Card 1 -->
-        <article class="card">
-          <div class="card-header">
-            <div class="card-title">April 2025 · Vienna Trip</div>
-            <div class="card-date">April 24-28</div>
-          </div>
-          <div class="photo-grid">
-            <!-- Note: Using placeholder images. Replace 'src' with your local file paths like 'images/vienna1.jpg' -->
-            <img src="https://images.unsplash.com/photo-1516550893923-42d28e5677af?w=500&auto=format&fit=crop&q=60" alt="Vienna Streets">
-            <img src="https://images.unsplash.com/photo-1526584598347-4884cc6f564c?w=500&auto=format&fit=crop&q=60" alt="Coffee">
-            <img src="https://images.unsplash.com/photo-1550765677-3c953e671d5c?w=500&auto=format&fit=crop&q=60" alt="Walking Together">
-          </div>
-        </article>
+  if (!user) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-rose-50">
+        <p className="text-rose-800">Please wait, logging you in...</p>
+      </div>
+    );
+  }
 
-        <!-- Month Card 2 -->
-        <article class="card">
-          <div class="card-header">
-            <div class="card-title">January 2025 · London</div>
-            <div class="card-date">New Year's</div>
+  return (
+    <div className="min-h-screen bg-stone-50 text-stone-800 font-sans">
+      {/* Header */}
+      <header className="bg-white shadow-sm sticky top-0 z-10 border-b border-stone-200">
+        <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center space-x-2 text-rose-500">
+            <Heart className="w-6 h-6 fill-rose-500" />
+            <h1 className="text-xl font-serif font-bold tracking-tight text-stone-800">
+              Our Story
+            </h1>
           </div>
-          <div class="photo-grid">
-            <img src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=500&auto=format&fit=crop&q=60" alt="London Eye">
-            <img src="https://images.unsplash.com/photo-1520986606214-8b456906c813?w=500&auto=format&fit=crop&q=60" alt="London Bridge">
-          </div>
-        </article>
-      </section>
-
-      <!-- Blog Section -->
-      <section id="section-blogs" class="section">
-        <div class="hint-box">
-          <strong>How to write:</strong> Copy a "card" block below and change the text. The text preserves line breaks!
+          
+          <nav className="flex items-center space-x-4">
+            <button 
+              onClick={() => setView('moments')}
+              className={`flex items-center space-x-1 px-3 py-1.5 rounded-full transition-colors ${
+                view === 'moments' 
+                  ? 'bg-rose-100 text-rose-700' 
+                  : 'text-stone-500 hover:bg-stone-100'
+              }`}
+            >
+              <Camera className="w-4 h-4" />
+              <span className="text-sm font-medium">Moments</span>
+            </button>
+            
+            <button 
+              onClick={() => setView('blogs')}
+              className={`flex items-center space-x-1 px-3 py-1.5 rounded-full transition-colors ${
+                view === 'blogs' 
+                  ? 'bg-rose-100 text-rose-700' 
+                  : 'text-stone-500 hover:bg-stone-100'
+              }`}
+            >
+              <BookOpen className="w-4 h-4" />
+              <span className="text-sm font-medium">Journal</span>
+            </button>
+          </nav>
         </div>
+      </header>
 
-        <!-- Blog Post 1 -->
-        <article class="card">
-          <div class="card-header">
-            <div class="card-title">We finally made it to Vienna</div>
-            <div class="card-date">April 27, 2025</div>
-          </div>
-          <div class="blog-content">
-            Today we got lost on the way to the museum, but honestly, it was the best part of the day. 
-            
-            We found that little bakery with the amazing croissants. I took a photo of you laughing when you got powdered sugar on your nose. I want to remember that moment forever.
-          </div>
-        </article>
-
-        <!-- Blog Post 2 -->
-        <article class="card">
-          <div class="card-header">
-            <div class="card-title">A quiet Sunday</div>
-            <div class="card-date">January 12, 2025</div>
-          </div>
-          <div class="blog-content">
-            It was raining all day in London. We just stayed inside, watched three movies, and ordered pizza.
-            
-            Sometimes these simple days are better than the big travel days.
-          </div>
-        </article>
-      </section>
-    </main>
-
-    <footer>
-      <p>Made with ❤️ for us</p>
-    </footer>
-  </div>
-
-  <script>
-    // Simple Logic to switch tabs
-    const tabPhotos = document.getElementById("tab-photos");
-    const tabBlogs = document.getElementById("tab-blogs");
-    const sectionPhotos = document.getElementById("section-photos");
-    const sectionBlogs = document.getElementById("section-blogs");
-
-    function switchTab(activeTab, activeSection) {
-      // Reset all
-      [tabPhotos, tabBlogs].forEach(t => t.classList.remove("active"));
-      [sectionPhotos, sectionBlogs].forEach(s => s.classList.remove("active"));
+      <main className="max-w-3xl mx-auto px-4 py-8">
+        {view === 'moments' ? <MomentsManager user={user} /> : <BlogManager user={user} />}
+      </main>
       
-      // Activate selected
-      activeTab.classList.add("active");
-      activeSection.classList.add("active");
-    }
+      <footer className="py-8 text-center text-stone-400 text-sm">
+        <p>Recorded with love • {new Date().getFullYear()}</p>
+      </footer>
+    </div>
+  );
+}
 
-    tabPhotos.addEventListener("click", () => switchTab(tabPhotos, sectionPhotos));
-    tabBlogs.addEventListener("click", () => switchTab(tabBlogs, sectionBlogs));
-  </script>
-</body>
-</html>
+// --- Moments Component (Photos/Timeline) ---
+function MomentsManager({ user }) {
+  const [moments, setMoments] = useState([]);
+  const [isAdding, setIsAdding] = useState(false);
+  
+  // Form State
+  const [title, setTitle] = useState('');
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [imageUrl, setImageUrl] = useState('');
+  const [description, setDescription] = useState('');
+
+  // Data Fetching
+  useEffect(() => {
+    if (!user) return;
+    
+    // Using simple collection query, sorting in memory
+    const q = collection(db, 'artifacts', appId, 'users', user.uid, 'moments');
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      // Sort by date descending (newest first)
+      data.sort((a, b) => new Date(b.date) - new Date(a.date));
+      setMoments(data);
+    }, (error) => {
+      console.error("Error fetching moments:", error);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!title || !date) return;
+
+    try {
+      await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'moments'), {
+        title,
+        date,
+        imageUrl,
+        description,
+        createdAt: serverTimestamp()
+      });
+      // Reset form
+      setTitle('');
+      setImageUrl('');
+      setDescription('');
+      setIsAdding(false);
+    } catch (error) {
+      console.error("Error adding moment:", error);
+      alert("Failed to save moment. Please try again.");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (confirm('Are you sure you want to delete this memory?')) {
+      try {
+        await deleteDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'moments', id));
+      } catch (error) {
+        console.error("Error deleting:", error);
+      }
+    }
+  };
+
+  return (
+    <div className="space-y-8">
+      <div className="flex justify-between items-end">
+        <div>
+          <h2 className="text-2xl font-serif font-bold text-stone-800">Timeline</h2>
+          <p className="text-stone-500 text-sm mt-1">Capturing our special days together.</p>
+        </div>
+        <button 
+          onClick={() => setIsAdding(!isAdding)}
+          className="flex items-center space-x-2 bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-full shadow-sm transition-colors text-sm font-medium"
+        >
+          {isAdding ? 'Cancel' : <><Plus className="w-4 h-4" /> <span>Add Moment</span></>}
+        </button>
+      </div>
+
+      {isAdding && (
+        <div className="bg-white p-6 rounded-xl shadow-md border border-stone-100 animate-in fade-in slide-in-from-top-4 duration-300">
+          <h3 className="font-medium text-stone-800 mb-4">New Memory</h3>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-stone-500 uppercase mb-1">Title</label>
+                <input 
+                  type="text" 
+                  required
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-rose-200"
+                  placeholder="e.g., Our First Trip"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-stone-500 uppercase mb-1">Date</label>
+                <input 
+                  type="date" 
+                  required
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-rose-200"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-xs font-medium text-stone-500 uppercase mb-1">Image URL (Optional)</label>
+              <div className="flex space-x-2">
+                <ImageIcon className="w-5 h-5 text-stone-400 mt-2.5" />
+                <input 
+                  type="url" 
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  className="flex-1 px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-rose-200"
+                  placeholder="https://..."
+                />
+              </div>
+              <p className="text-xs text-stone-400 mt-1">Tip: Right-click an image online and select "Copy Image Address"</p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-stone-500 uppercase mb-1">Description</label>
+              <textarea 
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border border-stone-200 focus:outline-none focus:ring-2 focus:ring-rose-200 h-24 resize-none"
+                placeholder="What happened on this day?"
+              />
+            </div>
+
+            <div className="pt-2">
+              <button 
+                type="submit"
+                className="w-full bg-stone-800 hover:bg-stone-900 text-white font-medium py-2.5 rounded-lg transition-colors shadow-sm"
+              >
+                Save Memory
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      <div className="space-y-8">
+        {moments.length === 0 && !isAdding && (
+          <div className="text-center py-12 bg-white rounded-xl border border-stone-100 border-dashed">
+            <Camera className="w-12 h-12 text-stone-300 mx-auto mb-3" />
+            <p className="text-stone-500">No moments recorded yet.</p>
+            <button onClick={() => setIsAdding(true)} className="text-rose-500 font-medium mt-2 hover:underline">Add the first one</button>
+          </div>
+        )}
+
+        {moments.map((moment) => (
+          <div key={moment.id} className="bg-white rounded-xl shadow-sm overflow-hidden border border-stone-100 group">
+            {moment.imageUrl && (
+              <div className="relative h-64 md:h-80 w-full overflow-hidden bg-stone-100">
+                <img 
+                  src={moment.imageUrl} 
+                  alt={moment.title}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://placehold.co/800x400/ffe4e6/e11d48?text=Image+Not+Found';
+                  }}
+                />
+              </div>
+            )}
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex items-center space-x-2 text-rose-500 text-sm font-medium mb-2">
+                  <Calendar className="w-4 h-4" />
+                  <span>{new Date(moment.date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                </div>
+                <button 
+                  onClick={() => handleDelete(moment.id)}
+                  className="text-stone-300 hover:text-red-500 transition-colors p-1"
+                  title="Delete moment"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+              
+              <h3 className="text-2xl font-serif font-bold text-stone-800 mb-3">{moment.title}</h3>
+              <p className="text-stone-600 leading-relaxed whitespace-pre-wrap">{moment.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// --- Blog Component (Text/Journal) ---
+function BlogManager({ user }) {
+  const [blogs, setBlogs] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
+  
+  // Form State
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+
+  // Data Fetching
+  useEffect(() => {
+    if (!user) return;
+    
+    const q = collection(db, 'artifacts', appId, 'users', user.uid, 'blogs');
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      // Sort by created time (newest first) locally
+      // We use a simple sort here since we fetched strict collection
+      data.sort((a, b) => {
+        const tA = a.createdAt?.seconds || 0;
+        const tB = b.createdAt?.seconds || 0;
+        return tB - tA;
+      });
+      setBlogs(data);
+    }, (error) => {
+      console.error("Error fetching blogs:", error);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!title || !content) return;
+
+    try {
+      await addDoc(collection(db, 'artifacts', appId, 'users', user.uid, 'blogs'), {
+        title,
+        content,
+        createdAt: serverTimestamp(),
+        date: new Date().toISOString()
+      });
+      // Reset form
+      setTitle('');
+      setContent('');
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error adding blog:", error);
+      alert("Failed to save entry.");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (confirm('Delete this journal entry?')) {
+      try {
+        await deleteDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'blogs', id));
+      } catch (error) {
+        console.error("Error deleting blog:", error);
+      }
+    }
+  };
+
+  return (
+    <div className="space-y-8">
+      <div className="flex justify-between items-end">
+        <div>
+          <h2 className="text-2xl font-serif font-bold text-stone-800">Love Journal</h2>
+          <p className="text-stone-500 text-sm mt-1">Thoughts, letters, and little things.</p>
+        </div>
+        <button 
+          onClick={() => setIsEditing(!isEditing)}
+          className="flex items-center space-x-2 bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-full shadow-sm transition-colors text-sm font-medium"
+        >
+          {isEditing ? 'Cancel' : <><PenTool className="w-4 h-4" /> <span>Write Entry</span></>}
+        </button>
+      </div>
+
+      {isEditing && (
+        <div className="bg-white p-6 rounded-xl shadow-md border border-stone-100 animate-in fade-in slide-in-from-top-4 duration-300">
+           <h3 className="font-medium text-stone-800 mb-4">New Entry</h3>
+           <form onSubmit={handleSubmit} className="space-y-4">
+             <div>
+               <input 
+                 type="text" 
+                 required
+                 value={title}
+                 onChange={(e) => setTitle(e.target.value)}
+                 className="w-full px-4 py-2 text-lg font-medium rounded-lg border-none bg-stone-50 focus:bg-white focus:ring-2 focus:ring-rose-200 transition-all placeholder-stone-400"
+                 placeholder="Title of your entry..."
+               />
+             </div>
+             <div>
+               <textarea 
+                 required
+                 value={content}
+                 onChange={(e) => setContent(e.target.value)}
+                 className="w-full px-4 py-3 rounded-lg border-none bg-stone-50 focus:bg-white focus:ring-2 focus:ring-rose-200 h-48 resize-none transition-all placeholder-stone-400 leading-relaxed"
+                 placeholder="Write your heart out..."
+               />
+             </div>
+             <div className="flex justify-end">
+               <button 
+                type="submit"
+                className="bg-stone-800 hover:bg-stone-900 text-white font-medium px-6 py-2 rounded-lg transition-colors shadow-sm"
+               >
+                 Publish
+               </button>
+             </div>
+           </form>
+        </div>
+      )}
+
+      <div className="grid gap-6">
+        {blogs.length === 0 && !isEditing && (
+          <div className="text-center py-12 bg-white rounded-xl border border-stone-100 border-dashed">
+            <BookOpen className="w-12 h-12 text-stone-300 mx-auto mb-3" />
+            <p className="text-stone-500">Your journal is empty.</p>
+            <button onClick={() => setIsEditing(true)} className="text-rose-500 font-medium mt-2 hover:underline">Write your first note</button>
+          </div>
+        )}
+
+        {blogs.map((blog) => (
+          <article key={blog.id} className="bg-white p-6 rounded-xl shadow-sm border border-stone-100 hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex items-center space-x-2 text-stone-400 text-xs uppercase tracking-wide">
+                <span>{new Date(blog.date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                <span>•</span>
+                <span>{new Date(blog.date).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}</span>
+              </div>
+              <button 
+                onClick={() => handleDelete(blog.id)}
+                className="text-stone-300 hover:text-red-500 transition-colors p-1"
+                title="Delete entry"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+            
+            <h3 className="text-xl font-serif font-bold text-stone-800 mb-3">{blog.title}</h3>
+            <div className="text-stone-600 leading-relaxed whitespace-pre-wrap font-light">
+              {blog.content}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
