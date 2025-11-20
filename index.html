@@ -428,26 +428,36 @@
     .food-display-card:hover { transform: translateY(-5px); }
 
     /* NEW GALLERY STYLES */
+    .gallery-wrapper {
+        position: relative;
+        width: 100%;
+        height: 400px; /* Increased height for better viewing */
+        background: #000; /* Black background for letterboxing */
+    }
+
     .gallery-container {
         width: 100%;
-        height: 280px;
+        height: 100%;
         overflow-x: auto;
         display: flex;
         scroll-snap-type: x mandatory;
         scrollbar-width: none; /* Hide scrollbar */
+        scroll-behavior: smooth; /* Smooth scroll via JS */
     }
     .gallery-container::-webkit-scrollbar { display: none; }
     
     .gallery-img {
         min-width: 100%;
         height: 100%;
-        object-fit: cover;
+        /* CHANGED TO CONTAIN to prevent cropping */
+        object-fit: contain; 
         scroll-snap-align: start;
+        background: #000;
     }
 
     .gallery-indicator {
         position: absolute;
-        top: 250px;
+        bottom: 16px;
         left: 50%;
         transform: translateX(-50%);
         display: flex;
@@ -461,6 +471,33 @@
         background: rgba(255,255,255,0.5);
         backdrop-filter: blur(2px);
     }
+
+    /* NAV BUTTONS FOR GALLERY */
+    .nav-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 20;
+        color: white;
+        transition: all 0.2s;
+    }
+    .nav-arrow:hover {
+        background: rgba(255, 255, 255, 0.8);
+        color: #000;
+    }
+    .nav-prev { left: 16px; }
+    .nav-next { right: 16px; }
+
     /* End New Gallery Styles */
 
     .fd-content { padding: 24px; position: relative; }
@@ -784,7 +821,7 @@
                 // remove active class from others
                 document.querySelectorAll('.timeline-node').forEach(n => n.classList.remove('active'));
                 node.classList.add('active');
-                renderFoodCard(entry);
+                renderFoodCard(entry, index);
             };
             
             track.appendChild(node);
@@ -796,7 +833,7 @@
         }
     }
 
-    function renderFoodCard(data) {
+    function renderFoodCard(data, index) {
         const stage = document.getElementById('food-stage');
         stage.innerHTML = ''; // Clear previous
 
@@ -807,26 +844,40 @@
         // Generate Images HTML
         let imagesHtml = '';
         let indicatorsHtml = '';
+        let navButtonsHtml = '';
         
         // Handle array of images
         const images = Array.isArray(data.img) ? data.img : [data.img];
+        const galleryId = `gallery-${index}`;
         
-        imagesHtml = `<div class="gallery-container">`;
+        imagesHtml = `<div id="${galleryId}" class="gallery-container">`;
         images.forEach(src => {
             imagesHtml += `<img src="${src}" class="gallery-img" alt="${data.title}">`;
         });
         imagesHtml += `</div>`;
 
-        // Add indicators if more than 1 image
+        // Add indicators and Nav Buttons if more than 1 image
         if (images.length > 1) {
             indicatorsHtml = `<div class="gallery-indicator">
                 ${images.map(() => `<div class="indicator-dot"></div>`).join('')}
             </div>`;
+            
+            navButtonsHtml = `
+                <div class="nav-arrow nav-prev" onclick="scrollGallery('${galleryId}', -1, event)">
+                    <i data-lucide="chevron-left" width="24"></i>
+                </div>
+                <div class="nav-arrow nav-next" onclick="scrollGallery('${galleryId}', 1, event)">
+                    <i data-lucide="chevron-right" width="24"></i>
+                </div>
+            `;
         }
 
         card.innerHTML = `
-            ${imagesHtml}
-            ${indicatorsHtml}
+            <div class="gallery-wrapper">
+                ${imagesHtml}
+                ${navButtonsHtml}
+                ${indicatorsHtml}
+            </div>
             <div class="fd-content">
                 <div class="fd-date">${data.date}</div>
                 <h3 class="card-title" style="font-size:1.8rem;">${data.title}</h3>
@@ -838,6 +889,16 @@
         `;
         stage.appendChild(card);
         lucide.createIcons();
+    }
+    
+    // New Helper for scrolling the gallery
+    function scrollGallery(id, direction, event) {
+        event.stopPropagation(); // Stop the card click (modal) event
+        const el = document.getElementById(id);
+        if(el) {
+            const width = el.offsetWidth;
+            el.scrollBy({ left: direction * width, behavior: 'smooth' });
+        }
     }
 
     function createNode(mainText, subText) {
@@ -1046,4 +1107,3 @@
   </script>
 </body>
 </html>
-
