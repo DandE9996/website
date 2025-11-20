@@ -658,7 +658,6 @@ I remember looking at you while you were reading the map, looking so confused, a
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
       
-      // For the fullscreen travel tab, we need special handling
       const selectedTab = document.getElementById('tab-' + tabName);
       const selectedBtn = document.getElementById('btn-' + tabName);
       
@@ -710,35 +709,25 @@ I remember looking at you while you were reading the map, looking so confused, a
             .polygonStrokeColor(() => 'rgba(125, 211, 252, 0.85)')
             .polygonAltitude(0.02)
             
-            // POINTS (Beacons) - smaller + closer to surface
-            .pointsData(travelData)
-            .pointColor(() => '#fb7185') // Soft rose
-            .pointAltitude(0.06)
-            .pointRadius(0.28) // much smaller than original
-            .pointResolution(24)
-            .pointsMerge(true)
-            .pointLabel('label') // tooltip with city name
-            .onPointClick(d => openModalFromData(d))
-            .onPointHover(d => {
-               globeContainer.style.cursor = d ? 'pointer' : 'grab';
-            })
-            
-            // ANIMATED RINGS (Ripple Effect)
+            // ANIMATED RINGS (Ripple Effect) around each location
             .ringsData(travelData)
-            .ringColor(() => 'rgba(248, 113, 113, 0.55)')
+            .ringColor(() => 'rgba(248, 250, 252, 0.45)')
             .ringMaxRadius(3.5)
             .ringPropagationSpeed(2.5)
             .ringRepeatPeriod(900)
             
-            // LABELS - floating city names above pins
+            // LABEL DOTS (no text, just small clickable circles)
             .labelsData(travelData)
-            .labelText('label')
-            .labelColor(() => 'rgba(248, 250, 252, 0.95)')
+            .labelText(() => '') // no visible text, only dot
+            .labelSize(0)        // ensure text is hidden
+            .labelColor(() => '#e5e7eb') // dot color (soft light)
             .labelAltitude(0.04)
-            .labelSize(0.9)
             .labelIncludeDot(true)
-            .labelDotRadius(0.07)
-            .labelDotOrientation(() => 'top')
+            .labelDotRadius(0.18)
+            .onLabelClick(d => openModalFromData(d))
+            .onLabelHover(d => {
+              globeContainer.style.cursor = d ? 'pointer' : 'grab';
+            })
 
             (globeContainer);
 
