@@ -244,6 +244,7 @@
       margin-bottom: 0;
       box-shadow: none;
       position: relative;
+      cursor: grab; /* default cursor for rotating the globe */
     }
     
     /* CARDS */
@@ -600,8 +601,8 @@ I remember looking at you while you were reading the map, looking so confused, a
       const selectedTab = document.getElementById('tab-' + tabName);
       const selectedBtn = document.getElementById('btn-' + tabName);
       
-      if(selectedTab) selectedTab.classList.add('active');
-      if(selectedBtn) selectedBtn.classList.add('active');
+      if (selectedTab) selectedTab.classList.add('active');
+      if (selectedBtn) selectedBtn.classList.add('active');
 
       if (tabName === 'travel') {
         // Initialize globe if first time
@@ -632,45 +633,59 @@ I remember looking at you while you were reading the map, looking so confused, a
             .width(w)
             .height(h)
             .backgroundColor('rgba(0,0,0,0)') // Transparent for star background
-            
-            // HOLOGRAPHIC EARTH STYLING
-            .globeImageUrl(null) // No texture! Pure vector.
-            .showAtmosphere(true) 
-            .atmosphereColor('#80bdff') 
-            .atmosphereAltitude(0.25) 
 
+            // ENHANCED EARTH STYLING
+            .showGlobe(true)
+            .showGraticules(true)
+            .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg') // Night texture for clearer continents
+            .showAtmosphere(true) 
+            .atmosphereColor('#38bdf8') 
+            .atmosphereAltitude(0.22) 
+
+            // Landmasses: thin neon outline over the texture
             .polygonsData(countries.features)
-            // Glowing landmasses
-            .polygonCapColor(() => 'rgba(0, 180, 255, 0.2)') 
-            .polygonSideColor(() => 'rgba(0, 150, 255, 0.3)')
-            .polygonStrokeColor(() => '#50e3c2')
-            .polygonAltitude(0.01)
+            .polygonCapColor(() => 'rgba(56, 189, 248, 0.15)')
+            .polygonSideColor(() => 'rgba(37, 99, 235, 0.55)')
+            .polygonStrokeColor(() => 'rgba(125, 211, 252, 0.85)')
+            .polygonAltitude(0.02)
             
-            // POINTS (Beacons)
+            // POINTS (Beacons) - smaller + closer to surface
             .pointsData(travelData)
-            .pointColor(() => '#ff3366') // Rose
-            .pointAltitude(0.1)
-            .pointRadius(1.2) 
-            .pointResolution(32)
+            .pointColor(() => '#fb7185') // Soft rose
+            .pointAltitude(0.06)
+            .pointRadius(0.28) // much smaller than before (was 1.2)
+            .pointResolution(24)
+            .pointsMerge(true)
+            .pointLabel('label') // tooltip with city name
             .onPointClick(d => openModalFromData(d))
             .onPointHover(d => {
-               globeContainer.style.cursor = d ? 'pointer' : 'default';
+               globeContainer.style.cursor = d ? 'pointer' : 'grab';
             })
             
             // ANIMATED RINGS (Ripple Effect)
             .ringsData(travelData)
-            .ringColor(() => '#ff3366')
-            .ringMaxRadius(6)
-            .ringPropagationSpeed(3)
-            .ringRepeatPeriod(800)
+            .ringColor(() => 'rgba(248, 113, 113, 0.55)')
+            .ringMaxRadius(3.5)
+            .ringPropagationSpeed(2.5)
+            .ringRepeatPeriod(900)
             
-            // ARCS (Flight paths)
+            // ARCS (Flight paths) - thinner + gradient
             .arcsData(arcsData)
-            .arcColor(() => '#00ffff') // Cyan arcs
-            .arcDashLength(0.4)
-            .arcDashGap(0.2)
-            .arcDashAnimateTime(1500)
-            .arcStroke(0.5)
+            .arcColor(() => ['#22d3ee', '#f97316']) // cyan -> amber gradient
+            .arcDashLength(0.45)
+            .arcDashGap(0.15)
+            .arcDashAnimateTime(1600)
+            .arcStroke(0.35)
+
+            // LABELS - floating city names above pins
+            .labelsData(travelData)
+            .labelText('label')
+            .labelColor(() => 'rgba(248, 250, 252, 0.95)')
+            .labelAltitude(0.04)
+            .labelSize(0.9)
+            .labelIncludeDot(true)
+            .labelDotRadius(0.07)
+            .labelDotOrientation(() => 'top')
 
             (globeContainer);
 
@@ -679,7 +694,7 @@ I remember looking at you while you were reading the map, looking so confused, a
         });
 
       window.addEventListener('resize', () => {
-         if(myGlobeInstance && globeContainer) {
+         if (myGlobeInstance && globeContainer) {
            myGlobeInstance.width(globeContainer.clientWidth);
            myGlobeInstance.height(globeContainer.clientHeight);
          }
@@ -770,5 +785,3 @@ I remember looking at you while you were reading the map, looking so confused, a
   </script>
 </body>
 </html>
-
-
