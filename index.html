@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Daniel & Eva</title>
+  <title>Our Story</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
   <!-- 1. Load Icons -->
@@ -182,22 +182,12 @@
       height: 600px; 
       border-radius: 24px;
       overflow: hidden;
-      background: #040d21; /* Dark blue space background */
+      background: #050505; /* Dark background */
       margin-bottom: 32px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.4);
       position: relative; 
     }
     
-    .globe-tooltip {
-        font-family: 'Inter', sans-serif;
-        background: rgba(255, 255, 255, 0.9);
-        color: #333;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 12px;
-        font-weight: 600;
-    }
-
     /* CARDS */
     .section-header { margin-bottom: 24px; text-align: center; }
     .section-header h2 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 8px; color: var(--text-main); }
@@ -361,7 +351,7 @@
     <div class="header-inner">
       <div class="logo">
         <i data-lucide="heart" class="fill-rose-500 text-rose-500" width="20"></i>
-        <span>Daniel & Eva</span>
+        <span>Our Story</span>
       </div>
       <nav>
         <button id="btn-home" class="nav-btn active" onclick="switchTab('home')">
@@ -385,7 +375,7 @@
     <!-- TAB 1: HOME -->
     <section id="tab-home" class="tab-content active">
       <div class="hero-container">
-        <img src="pics/london.jpg" alt="Us" class="hero-bg-image">
+        <img src="https://images.unsplash.com/photo-1529619768328-e37af76c6fe5?auto=format&fit=crop&w=1200&q=80" alt="Us" class="hero-bg-image">
         
         <div class="hero-overlay">
           <div class="hero-heart">
@@ -403,11 +393,11 @@
     </section>
 
 
-    <!-- TAB 2: TRAVEL (EARTH) -->
+    <!-- TAB 2: TRAVEL (HOLOGRAPHIC GLOBE) -->
     <section id="tab-travel" class="tab-content">
       <div class="section-header">
         <h2>Our Adventures</h2>
-        <p>Spin the globe and click the pins to relive our trips.</p>
+        <p>Spin the globe and click the pulsing rings.</p>
       </div>
       
       <!-- THE GLOBE CONTAINER -->
@@ -507,8 +497,9 @@ I remember looking at you while you were reading the map, looking so confused, a
   <script>
     // --- GLOBAL VARIABLES ---
     let globeInitialized = false;
-    let myGlobeInstance = null; // Store instance to handle resize
+    let myGlobeInstance = null; 
     
+    // DATA: Add your trips here
     const travelData = [
       {
         lat: 48.2082, 
@@ -529,6 +520,17 @@ I remember looking at you while you were reading the map, looking so confused, a
         desc: "It was freezing cold but your hand was warm. We watched the fireworks from a distance because the crowd was too crazy. Happy new year to us."
       }
     ];
+    
+    // Calculate Arcs (connecting points)
+    const arcsData = [];
+    for (let i = 0; i < travelData.length - 1; i++) {
+      arcsData.push({
+        startLat: travelData[i].lat,
+        startLng: travelData[i].lng,
+        endLat: travelData[i+1].lat,
+        endLng: travelData[i+1].lng
+      });
+    }
 
     // --- FUNCTIONS ---
 
@@ -553,35 +555,62 @@ I remember looking at you while you were reading the map, looking so confused, a
       const globeContainer = document.getElementById('globe-viz');
       if (!globeContainer) return;
 
-      // Get explicit dimensions
       const w = globeContainer.clientWidth;
       const h = globeContainer.clientHeight;
 
-      myGlobeInstance = Globe()
-        .width(w)
-        .height(h)
-        // Use High-Res Blue Marble (Day)
-        .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
-        .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
-        // Set atmosphere to look real
-        .atmosphereColor('lightskyblue')
-        .atmosphereAltitude(0.15)
-        .backgroundColor('rgba(0,0,0,0)') // Transparent so container background shows
-        .pointsData(travelData)
-        .pointColor(() => '#f43f5e')
-        .pointAltitude(0.02)
-        .pointRadius(0.5) // Larger radius for easier clicking
-        .pointResolution(24)
-        .pointsMerge(false) // Better interactivity
-        .pointLabel('label')
-        .onPointClick(d => openModalFromData(d))
-        .onPointHover(d => {
-           globeContainer.style.cursor = d ? 'pointer' : 'default';
-        })
-        (globeContainer);
+      // Fetch Countries GeoJSON for the cool vector look
+      fetch('https://raw.githubusercontent.com/vasturiano/globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson')
+        .then(res => res.json())
+        .then(countries => {
+          
+          myGlobeInstance = Globe()
+            .width(w)
+            .height(h)
+            .backgroundColor('#050505') // Dark background
+            
+            // HOLOGRAPHIC EARTH STYLING
+            .globeImageUrl(null) // No texture! Pure vector.
+            .polygonsData(countries.features)
+            .polygonCapColor(() => 'rgba(20, 30, 50, 1)') // Dark blue land
+            .polygonSideColor(() => 'rgba(0, 200, 255, 0.05)')
+            .polygonStrokeColor(() => '#111')
+            .polygonAltitude(0.005)
+            
+            // Atmosphere
+            .atmosphereColor('#3a228a') // Purple/Blue glow
+            .atmosphereAltitude(0.2)
 
-      myGlobeInstance.controls().autoRotate = true;
-      myGlobeInstance.controls().autoRotateSpeed = 0.5;
+            // POINTS (Beacons)
+            .pointsData(travelData)
+            .pointColor(() => '#f43f5e') // Rose
+            .pointAltitude(0.1)
+            .pointRadius(1.2) // Big visible points
+            .pointResolution(32)
+            .onPointClick(d => openModalFromData(d))
+            .onPointHover(d => {
+               globeContainer.style.cursor = d ? 'pointer' : 'default';
+            })
+            
+            // ANIMATED RINGS (Ripple Effect)
+            .ringsData(travelData)
+            .ringColor(() => '#f43f5e')
+            .ringMaxRadius(6)
+            .ringPropagationSpeed(3)
+            .ringRepeatPeriod(800)
+            
+            // ARCS (Flight paths)
+            .arcsData(arcsData)
+            .arcColor(() => '#00ffff') // Cyan arcs
+            .arcDashLength(0.4)
+            .arcDashGap(0.2)
+            .arcDashAnimateTime(1500)
+            .arcStroke(0.5)
+
+            (globeContainer);
+
+          myGlobeInstance.controls().autoRotate = true;
+          myGlobeInstance.controls().autoRotateSpeed = 0.6;
+        });
 
       window.addEventListener('resize', () => {
          if(myGlobeInstance && globeContainer) {
@@ -671,4 +700,3 @@ I remember looking at you while you were reading the map, looking so confused, a
   </script>
 </body>
 </html>
-
