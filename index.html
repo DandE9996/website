@@ -5,13 +5,10 @@
   <title>Daniel & Eva</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <!-- 1. Load Icons -->
   <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
   
-  <!-- 2. Load Globe Library -->
   <script src="//unpkg.com/globe.gl"></script>
   
-  <!-- 3. Load Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
@@ -140,8 +137,8 @@
       margin: 0;
       max-width: none;
       background-color: #000;
-      /* Using your uploaded star image */
-      background-image: url('image_493949.png');
+      /* Fallback image or remove if not needed */
+      background-image: url('https://images.unsplash.com/photo-1519681393798-3828fb4090bb?auto=format&fit=crop&w=1920&q=80'); 
       background-size: cover;
       background-position: center;
     }
@@ -237,16 +234,31 @@
     /* GLOBE CONTAINER */
     #globe-viz {
       width: 100%;
-      height: 100%; /* Fills the fullscreen tab */
+      height: 100%; 
       border-radius: 0;
       overflow: hidden;
-      background: transparent; /* Let stars show through */
+      background: transparent; 
       margin-bottom: 0;
       box-shadow: none;
       position: relative;
-      cursor: grab; /* default cursor for rotating the globe */
+      cursor: grab; 
     }
     
+    /* MAP PIN STYLING FOR GLOBE */
+    .map-pin {
+        color: #f43f5e; /* Rose color */
+        transition: all 0.3s ease;
+        cursor: pointer;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    }
+    
+    .map-pin:hover {
+        transform: scale(1.3) translateY(-5px);
+        color: #fff;
+        filter: drop-shadow(0 0 10px rgba(244, 63, 94, 0.8));
+        z-index: 1000;
+    }
+
     /* CARDS */
     .section-header { margin-bottom: 24px; text-align: center; }
     .section-header h2 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 8px; color: var(--text-main); }
@@ -431,10 +443,9 @@
 
   <main>
     
-    <!-- TAB 1: HOME -->
     <section id="tab-home" class="tab-content active">
       <div class="hero-container">
-        <img src="pics/london.jpg" alt="Us" class="hero-bg-image">
+        <img src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1600&q=80" alt="Us" class="hero-bg-image">
         
         <div class="hero-overlay">
           <div class="hero-heart">
@@ -452,19 +463,15 @@
     </section>
 
 
-    <!-- TAB 2: TRAVEL (HOLOGRAPHIC GLOBE - FULLSCREEN) -->
     <section id="tab-travel" class="tab-content fullscreen-tab">
-      <!-- Back Button -->
       <button class="close-fullscreen-btn" onclick="switchTab('home')">
         <i data-lucide="arrow-left" width="20"></i> Back Home
       </button>
       
-      <!-- THE GLOBE CONTAINER -->
       <div id="globe-viz"></div>
     </section>
 
 
-    <!-- TAB 3: FOOD -->
     <section id="tab-food" class="tab-content">
       <div class="section-header">
         <h2>What We Have Eaten</h2>
@@ -502,7 +509,6 @@
     </section>
 
 
-    <!-- TAB 4: BLOG -->
     <section id="tab-blog" class="tab-content">
       <div class="section-header">
         <h2>Our Journal</h2>
@@ -536,7 +542,6 @@ I remember looking at you while you were reading the map, looking so confused, a
     <p>Made with ❤️ for us • 2025</p>
   </footer>
 
-  <!-- MODAL STRUCTURE -->
   <div id="modal-overlay" class="modal-overlay" onclick="closeModal(event)">
     <div class="modal-container">
       <button class="modal-close" onclick="closeModal(event)">
@@ -697,38 +702,44 @@ I remember looking at you while you were reading the map, looking so confused, a
             // ENHANCED EARTH STYLING
             .showGlobe(true)
             .showGraticules(true)
-            .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg') // Night texture for clearer continents
+            .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg') // Night texture
             .showAtmosphere(true) 
             .atmosphereColor('#38bdf8') 
             .atmosphereAltitude(0.22) 
 
-            // Landmasses: thin neon outline over the texture
+            // Landmasses: thin neon outline
             .polygonsData(countries.features)
             .polygonCapColor(() => 'rgba(56, 189, 248, 0.15)')
             .polygonSideColor(() => 'rgba(37, 99, 235, 0.55)')
             .polygonStrokeColor(() => 'rgba(125, 211, 252, 0.85)')
             .polygonAltitude(0.02)
             
-            // ANIMATED RINGS (Ripple Effect) around each location
+            // ANIMATED RINGS (Ripple Effect)
             .ringsData(travelData)
             .ringColor(() => 'rgba(248, 250, 252, 0.45)')
             .ringMaxRadius(3.5)
             .ringPropagationSpeed(2.5)
             .ringRepeatPeriod(900)
             
-            // LABEL DOTS (no text, just small clickable circles)
-            .labelsData(travelData)
-            .labelText(() => '') // no visible text, only dot
-            .labelSize(0)        // ensure text is hidden
-            .labelColor(() => '#e5e7eb') // dot color (soft light)
-            .labelAltitude(0.04)
-            .labelIncludeDot(true)
-            .labelDotRadius(0.18)
-            .onLabelClick(d => openModalFromData(d))
-            .onLabelHover(d => {
-              globeContainer.style.cursor = d ? 'pointer' : 'grab';
+            // *** CHANGED FROM LABELS TO HTML ELEMENTS (PINS) ***
+            .htmlElementsData(travelData)
+            .htmlElement(d => {
+                const el = document.createElement('div');
+                // SVG PIN ICON
+                el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="map-pin"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3" fill="white" stroke="none"/></svg>`;
+                
+                el.style.width = '32px'; 
+                // Center the tip of the pin at the coordinate
+                el.style.transform = 'translate(-50%, -100%)'; 
+                el.style.cursor = 'pointer';
+                el.style.pointerEvents = 'auto'; // Ensure click is captured
+                
+                // Handle Click
+                el.onclick = () => openModalFromData(d);
+                
+                return el;
             })
-
+            
             (globeContainer);
 
           myGlobeInstance.controls().autoRotate = true;
@@ -781,7 +792,7 @@ I remember looking at you while you were reading the map, looking so confused, a
         modalImg.style.display = 'none';
       }
 
-      if (modalTitle) modalTitle.innerText = data.title || '';
+      if (modalTitle) modalTitle.innerText = data.title || data.label || '';
       if (modalMeta) modalMeta.innerText = data.meta || '';
       if (modalDesc) modalDesc.innerText = data.desc || '';
 
