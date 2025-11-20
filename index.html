@@ -182,7 +182,7 @@
       height: 600px; 
       border-radius: 24px;
       overflow: hidden;
-      background: #050505; /* Dark background */
+      background: #000; /* Darker background for better contrast */
       margin-bottom: 32px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.4);
       position: relative; 
@@ -566,23 +566,26 @@ I remember looking at you while you were reading the map, looking so confused, a
           myGlobeInstance = Globe()
             .width(w)
             .height(h)
-            .backgroundColor('#050505') // Dark background
+            .backgroundColor('#000000') // Pure black background
             
             // HOLOGRAPHIC EARTH STYLING
             .globeImageUrl(null) // No texture! Pure vector.
-            .polygonsData(countries.features)
-            .polygonCapColor(() => 'rgba(20, 30, 50, 1)') // Dark blue land
-            .polygonSideColor(() => 'rgba(0, 200, 255, 0.05)')
-            .polygonStrokeColor(() => '#111')
-            .polygonAltitude(0.005)
-            
-            // Atmosphere
-            .atmosphereColor('#3a228a') // Purple/Blue glow
-            .atmosphereAltitude(0.2)
+            .showAtmosphere(true) // Ensure atmosphere is visible
+            .atmosphereColor('#80bdff') // Light blue atmosphere
+            .atmosphereAltitude(0.25) // Slightly higher atmosphere
 
+            .polygonsData(countries.features)
+            // Semi-transparent, glowing landmasses
+            .polygonCapColor(() => 'rgba(0, 180, 255, 0.2)') 
+            // Slightly darker sides for depth
+            .polygonSideColor(() => 'rgba(0, 150, 255, 0.3)')
+            // Bright, glowing borders
+            .polygonStrokeColor(() => '#50e3c2')
+            .polygonAltitude(0.01)
+            
             // POINTS (Beacons)
             .pointsData(travelData)
-            .pointColor(() => '#f43f5e') // Rose
+            .pointColor(() => '#ff3366') // Brighter rose for points
             .pointAltitude(0.1)
             .pointRadius(1.2) // Big visible points
             .pointResolution(32)
@@ -593,7 +596,7 @@ I remember looking at you while you were reading the map, looking so confused, a
             
             // ANIMATED RINGS (Ripple Effect)
             .ringsData(travelData)
-            .ringColor(() => '#f43f5e')
+            .ringColor(() => '#ff3366') // Brighter rose for rings
             .ringMaxRadius(6)
             .ringPropagationSpeed(3)
             .ringRepeatPeriod(800)
