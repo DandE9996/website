@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Our Moments</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: #f5f5f7;
+      color: #222;
+      line-height: 1.6;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e1e1e1;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    header p {
+      font-size: 1rem;
+      color: #666;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    nav button {
+      padding: 8px 20px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      background: #e0e0e0;
+      color: #555;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    nav button:hover {
+      background: #d0d0d0;
+    }
+
+    nav button.active {
+      background: #222;
+      color: white;
+      border-color: #222;
+    }
+
+    .section {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border: 1px solid #f0f0f0;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+
+    .card-date {
+      font-size: 0.85rem;
+      color: #888;
+      font-weight: 500;
+    }
+
+    /* Photo Grid Styles */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+    }
+
+    .photo-grid img {
+      width: 100%;
+      height: 200px;
+      border-radius: 8px;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+      background-color: #eee; /* Placeholder color */
+    }
+
+    .photo-grid img:hover {
+      transform: scale(1.02);
+    }
+
+    /* Blog Styles */
+    .blog-content {
+      font-size: 1rem;
+      color: #444;
+      white-space: pre-line; /* Preserves line breaks */
+      line-height: 1.8;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 48px;
+      font-size: 0.8rem;
+      color: #999;
+    }
+
+    .hint-box {
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      color: #8d6e08;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Our Story</h1>
+      <p>Collecting moments, one month at a time.</p>
+
+      <nav>
+        <button id="tab-photos" class="active">Photo Timeline</button>
+        <button id="tab-blogs">Journal</button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Photos Section -->
+      <section id="section-photos" class="section active">
+        <div class="hint-box">
+          <strong>How to update:</strong> Open this file in a code editor. Copy a "card" block below, and change the text and image links to your own photos.
+        </div>
+
+        <!-- Month Card 1 -->
+        <article class="card">
+          <div class="card-header">
+            <div class="card-title">April 2025 · Vienna Trip</div>
+            <div class="card-date">April 24-28</div>
+          </div>
+          <div class="photo-grid">
+            <!-- Note: Using placeholder images. Replace 'src' with your local file paths like 'images/vienna1.jpg' -->
+            <img src="https://images.unsplash.com/photo-1516550893923-42d28e5677af?w=500&auto=format&fit=crop&q=60" alt="Vienna Streets">
+            <img src="https://images.unsplash.com/photo-1526584598347-4884cc6f564c?w=500&auto=format&fit=crop&q=60" alt="Coffee">
+            <img src="https://images.unsplash.com/photo-1550765677-3c953e671d5c?w=500&auto=format&fit=crop&q=60" alt="Walking Together">
+          </div>
+        </article>
+
+        <!-- Month Card 2 -->
+        <article class="card">
+          <div class="card-header">
+            <div class="card-title">January 2025 · London</div>
+            <div class="card-date">New Year's</div>
+          </div>
+          <div class="photo-grid">
+            <img src="https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=500&auto=format&fit=crop&q=60" alt="London Eye">
+            <img src="https://images.unsplash.com/photo-1520986606214-8b456906c813?w=500&auto=format&fit=crop&q=60" alt="London Bridge">
+          </div>
+        </article>
+      </section>
+
+      <!-- Blog Section -->
+      <section id="section-blogs" class="section">
+        <div class="hint-box">
+          <strong>How to write:</strong> Copy a "card" block below and change the text. The text preserves line breaks!
+        </div>
+
+        <!-- Blog Post 1 -->
+        <article class="card">
+          <div class="card-header">
+            <div class="card-title">We finally made it to Vienna</div>
+            <div class="card-date">April 27, 2025</div>
+          </div>
+          <div class="blog-content">
+            Today we got lost on the way to the museum, but honestly, it was the best part of the day. 
+            
+            We found that little bakery with the amazing croissants. I took a photo of you laughing when you got powdered sugar on your nose. I want to remember that moment forever.
+          </div>
+        </article>
+
+        <!-- Blog Post 2 -->
+        <article class="card">
+          <div class="card-header">
+            <div class="card-title">A quiet Sunday</div>
+            <div class="card-date">January 12, 2025</div>
+          </div>
+          <div class="blog-content">
+            It was raining all day in London. We just stayed inside, watched three movies, and ordered pizza.
+            
+            Sometimes these simple days are better than the big travel days.
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer>
+      <p>Made with ❤️ for us</p>
+    </footer>
+  </div>
+
+  <script>
+    // Simple Logic to switch tabs
+    const tabPhotos = document.getElementById("tab-photos");
+    const tabBlogs = document.getElementById("tab-blogs");
+    const sectionPhotos = document.getElementById("section-photos");
+    const sectionBlogs = document.getElementById("section-blogs");
+
+    function switchTab(activeTab, activeSection) {
+      // Reset all
+      [tabPhotos, tabBlogs].forEach(t => t.classList.remove("active"));
+      [sectionPhotos, sectionBlogs].forEach(s => s.classList.remove("active"));
+      
+      // Activate selected
+      activeTab.classList.add("active");
+      activeSection.classList.add("active");
+    }
+
+    tabPhotos.addEventListener("click", () => switchTab(tabPhotos, sectionPhotos));
+    tabBlogs.addEventListener("click", () => switchTab(tabBlogs, sectionBlogs));
+  </script>
+</body>
+</html>
