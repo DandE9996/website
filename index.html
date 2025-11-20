@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <title>Daniel & Eva</title>
@@ -11,7 +11,7 @@
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
 
   <style>
     /* --- CSS STYLES --- */
@@ -31,7 +31,8 @@
     body {
       background-color: var(--bg-color);
       color: var(--text-main);
-      font-family: 'Inter', sans-serif;
+      /* Added Noto Sans SC for better Chinese rendering */
+      font-family: 'Inter', 'Noto Sans SC', sans-serif;
       line-height: 1.6;
       overflow-x: hidden; /* Prevent horizontal scroll */
     }
@@ -96,7 +97,7 @@
       border-radius: 9999px;
       border: none;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       font-weight: 500;
       white-space: nowrap;
       transition: all 0.2s;
@@ -137,7 +138,7 @@
       margin: 0;
       max-width: none;
       background-color: #000;
-      /* Fallback image or remove if not needed */
+      /* Fallback image */
       background-image: url('https://images.unsplash.com/photo-1519681393798-3828fb4090bb?auto=format&fit=crop&w=1920&q=80'); 
       background-size: cover;
       background-position: center;
@@ -283,14 +284,14 @@
     }
 
     .card::after, .food-card::after {
-      content: 'Click to view';
+      content: '点击查看'; /* Translated from 'Click to view' */
       position: absolute;
       top: 12px;
       right: 12px;
       background: rgba(255,255,255,0.9);
       padding: 4px 12px;
       border-radius: 20px;
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       opacity: 0;
       transition: opacity 0.3s;
       pointer-events: none;
@@ -426,16 +427,16 @@
       </div>
       <nav>
         <button id="btn-home" class="nav-btn active" onclick="switchTab('home')">
-          <i data-lucide="home" width="16"></i> Home
+          <i data-lucide="home" width="16"></i> 首页
         </button>
         <button id="btn-travel" class="nav-btn" onclick="switchTab('travel')">
-          <i data-lucide="plane" width="16"></i> Travel
+          <i data-lucide="plane" width="16"></i> 旅行
         </button>
         <button id="btn-food" class="nav-btn" onclick="switchTab('food')">
-          <i data-lucide="utensils" width="16"></i> Food
+          <i data-lucide="utensils" width="16"></i> 美食
         </button>
         <button id="btn-blog" class="nav-btn" onclick="switchTab('blog')">
-          <i data-lucide="book-open" width="16"></i> Journal
+          <i data-lucide="book-open" width="16"></i> 日记
         </button>
       </nav>
     </div>
@@ -452,20 +453,20 @@
             <i data-lucide="heart" width="48" height="48" class="fill-white text-white"></i>
           </div>
           <div class="days-count" id="days-display">0</div>
-          <div class="hero-text">Days Together</div>
-          <div class="hero-subtext">Since January 8, 2025</div>
+          <div class="hero-text">在一起的天数</div>
+          <div class="hero-subtext">始于 2025年1月8日</div>
         </div>
       </div>
       
       <div style="text-align: center; max-width: 500px; margin: 0 auto; color: var(--text-muted);">
-        <p>Welcome to our little corner of the internet. This is where I keep our memories safe.</p>
+        <p>欢迎来到我们的小天地。这里是珍藏我们回忆的地方。</p>
       </div>
     </section>
 
 
     <section id="tab-travel" class="tab-content fullscreen-tab">
       <button class="close-fullscreen-btn" onclick="switchTab('home')">
-        <i data-lucide="arrow-left" width="20"></i> Back Home
+        <i data-lucide="arrow-left" width="20"></i> 返回首页
       </button>
       
       <div id="globe-viz"></div>
@@ -474,35 +475,35 @@
 
     <section id="tab-food" class="tab-content">
       <div class="section-header">
-        <h2>What We Have Eaten</h2>
-        <p>Click to see the tasty details.</p>
+        <h2>我们的美食地图</h2>
+        <p>点击查看美味详情。</p>
       </div>
 
       <div class="food-grid">
         <div class="food-card" onclick="openModal(this)">
           <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=60" alt="Pizza" class="food-image">
           <div class="food-content">
-            <h3 class="food-title">Late Night Pizza</h3>
-            <div class="food-loc"><i data-lucide="map-pin" width="12"></i> Mario's Place</div>
-            <div style="display:none;" class="hidden-desc">Best pizza we've ever had. It was 2 AM and we were starving!</div>
+            <h3 class="food-title">深夜披萨</h3>
+            <div class="food-loc"><i data-lucide="map-pin" width="12"></i> 马里奥餐厅</div>
+            <div style="display:none;" class="hidden-desc">这绝对是我们吃过最好吃的披萨。当时是凌晨2点，我们快饿疯了！</div>
           </div>
         </div>
 
         <div class="food-card" onclick="openModal(this)">
           <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=600&q=60" alt="Sushi" class="food-image">
           <div class="food-content">
-            <h3 class="food-title">Sushi Date</h3>
-            <div class="food-loc"><i data-lucide="map-pin" width="12"></i> Downtown Tokyo</div>
-            <div style="display:none;" class="hidden-desc">Tried Uni (Sea Urchin) for the first time. You hated it, I loved it.</div>
+            <h3 class="food-title">寿司约会</h3>
+            <div class="food-loc"><i data-lucide="map-pin" width="12"></i> 东京市中心</div>
+            <div style="display:none;" class="hidden-desc">第一次尝试海胆。你讨厌它，但我爱死它了。</div>
           </div>
         </div>
 
         <div class="food-card" onclick="openModal(this)">
           <img src="https://images.unsplash.com/photo-1563379926898-05f4575a45d8?auto=format&fit=crop&w=600&q=60" alt="Pasta" class="food-image">
           <div class="food-content">
-            <h3 class="food-title">Homemade Pasta</h3>
-            <div class="food-loc"><i data-lucide="home" width="12"></i> At home</div>
-            <div style="display:none;" class="hidden-desc">We made a huge mess in the kitchen but the pasta turned out surprisingly good.</div>
+            <h3 class="food-title">自制意面</h3>
+            <div class="food-loc"><i data-lucide="home" width="12"></i> 家里</div>
+            <div style="display:none;" class="hidden-desc">我们在厨房搞得一团糟，但做出来的意面竟然出奇地好吃。</div>
           </div>
         </div>
       </div>
@@ -511,27 +512,27 @@
 
     <section id="tab-blog" class="tab-content">
       <div class="section-header">
-        <h2>Our Journal</h2>
-        <p>Click to read the full entry.</p>
+        <h2>我们的日记</h2>
+        <p>点击阅读全文。</p>
       </div>
 
       <article class="card" onclick="openModal(this)">
         <div class="card-body">
-          <div class="meta-tag">April 27, 2025</div>
-          <h3 class="card-title">Why I love traveling with you</h3>
-          <p class="card-text">Even when we get lost (which we did three times today), you always make it fun. 
+          <div class="meta-tag">2025年4月27日</div>
+          <h3 class="card-title">为什么我喜欢和你一起旅行</h3>
+          <p class="card-text">即使我们迷路了（今天就迷路了三次），你总能让这一切变得有趣。
 
-I love that we can just sit on a park bench and talk for hours without checking our phones. It feels like the world stops when we are having these conversations.
+我喜欢我们可以坐在公园的长椅上聊上几个小时而不看手机。当我们聊天时，感觉世界都静止了。
 
-I remember looking at you while you were reading the map, looking so confused, and I just thought "I am so lucky."</p>
+我记得看着你查看地图时困惑的样子，我当时就在想：“我真幸运。”</p>
         </div>
       </article>
 
       <article class="card" onclick="openModal(this)">
         <div class="card-body">
-          <div class="meta-tag">January 12, 2025</div>
-          <h3 class="card-title">Rainy days</h3>
-          <p class="card-text">We stayed in, ordered pizza, and watched movies all day. Sometimes the quiet days are the best ones. I made a promise to myself to appreciate these moments more.</p>
+          <div class="meta-tag">2025年1月12日</div>
+          <h3 class="card-title">下雨天</h3>
+          <p class="card-text">我们待在家里，点了披萨，看了一整天的电影。有时候安静的日子才是最好的。我向自己承诺要更加珍惜这些时刻。</p>
         </div>
       </article>
     </section>
@@ -539,7 +540,7 @@ I remember looking at you while you were reading the map, looking so confused, a
   </main>
 
   <footer>
-    <p>Made with ❤️ for us • 2025</p>
+    <p>为我们制作 ❤️ • 2025</p>
   </footer>
 
   <div id="modal-overlay" class="modal-overlay" onclick="closeModal(event)">
@@ -563,97 +564,97 @@ I remember looking at you while you were reading the map, looking so confused, a
     let globeInitialized = false;
     let myGlobeInstance = null; 
     
-    // DATA: Add your trips here
+    // DATA: Translated Travel Data
     const travelData = [
       {
         lat: 48.2082, 
         lng: 16.3738, 
         label: "Vienna", 
-        title: "Our first big trip",
+        title: "我们的第一次长途旅行",
         img: "https://images.unsplash.com/photo-1516550893923-42d28e5677af?auto=format&fit=crop&w=800&q=80",
-        meta: "Vienna, Austria · April 2025",
-        desc: "We finally made it! The streets were beautiful and we walked for hours. I will never forget the coffee we had at that small corner cafe. We sat there for two hours just watching people go by."
+        meta: "奥地利维也纳 · 2025年4月",
+        desc: "我们终于到了！街道很美，我们走了好几个小时。我永远不会忘记我们在那个街角小咖啡馆喝的咖啡。我们坐在那里两个小时，只是看着人来人往。"
       },
       {
         lat: 51.5074, 
         lng: -0.1278, 
         label: "London",
-        title: "New Year's in London",
+        title: "伦敦跨年",
         img: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80",
-        meta: "London, UK · Jan 2025",
-        desc: "It was freezing cold but your hand was warm. We watched the fireworks from a distance because the crowd was too crazy. Happy new year to us."
+        meta: "英国伦敦 · 2025年1月",
+        desc: "天气冷极了，但你的手很暖。因为人太多太疯狂，我们只能远远地看烟花。祝我们新年快乐。"
       },
       {
         lat: 34.746613,
         lng: 113.625328,
         label: "Zhengzhou",
-        title: "Skies over Zhengzhou",
+        title: "郑州的天空",
         img: "",
-        meta: "Zhengzhou, China",
-        desc: "Dusty skies, busy streets, and somehow we still found a quiet corner just for us. We walked without any plan and ended up talking about everything and nothing at the same time."
+        meta: "中国郑州",
+        desc: "尘土飞扬的天空，繁忙的街道，但我们不知怎么还是找到了一个属于我们的安静角落。我们漫无目的地走着，聊着一切，又好像什么都没聊。"
       },
       {
         lat: 32.049999,
         lng: 118.766670,
         label: "Nanjing",
-        title: "Slow afternoons in Nanjing",
+        title: "南京的午后时光",
         img: "",
-        meta: "Nanjing, China",
-        desc: "Tree-lined roads, old walls, and the feeling that the city had a hundred stories it wanted to tell us. We shared roasted sweet potatoes while watching the sunset behind the city wall."
+        meta: "中国南京",
+        desc: "林荫大道，古老的城墙，感觉这座城市有一百个故事想告诉我们。我们看着城墙后的日落，分吃着烤红薯。"
       },
       {
         lat: 27.825110,
         lng: 99.707790,
         label: "Shangri-La",
-        title: "High altitudes, soft laughs",
+        title: "高海拔，轻声笑语",
         img: "",
-        meta: "Shangri-La, China",
-        desc: "Cold air, warm cheeks, and prayer flags fluttering above us. You kept checking if I was dizzy from the altitude, but honestly, I think it was just you making my heart race."
+        meta: "中国香格里拉",
+        desc: "清冷的空气，温暖的脸颊，还有头顶飘扬的经幡。你一直问我有没有高原反应，但老实说，我觉得让我心跳加速的只是你。"
       },
       {
         lat: 26.865118,
         lng: 100.229301,
         label: "Lijiang",
-        title: "Night lights of Lijiang",
+        title: "丽江夜色",
         img: "",
-        meta: "Lijiang, China",
-        desc: "Lanterns reflected in the water and music drifting through the streets. We got lost in the alleys again and again, but we always found our way back to each other."
+        meta: "中国丽江",
+        desc: "灯笼倒映在水中，音乐飘荡在街道上。我们在巷子里迷路了一次又一次，但总能找到回到彼此身边的路。"
       },
       {
         lat: 25.702600,
         lng: 100.155400,
         label: "Dali",
-        title: "Wind, lake and mountains",
+        title: "风、湖泊与山峦",
         img: "",
-        meta: "Dali, China",
-        desc: "The wind from the lake was colder than we expected, so we shared a scarf and walked along the shore anyway. The mountains watched us quietly while we made new little promises."
+        meta: "中国大理",
+        desc: "洱海的风比我们想象的要冷，但我们还是裹着同一条围巾沿岸漫步。苍山静静地注视着我们许下新的小承诺。"
       },
       {
         lat: 31.224361,
         lng: 121.469170,
         label: "Shanghai",
-        title: "Lights of Shanghai",
+        title: "上海霓虹",
         img: "",
-        meta: "Shanghai, China",
-        desc: "Neon lights, crowded streets, and a river that somehow made the whole city feel calmer. We stood by the Bund and imagined all the future trips we still want to take together."
+        meta: "中国上海",
+        desc: "霓虹闪烁，人潮拥挤，而江水却让整座城市显得格外平静。我们站在外滩，畅想着未来还要一起去的所有地方。"
       },
       {
         lat: 50.073658,
         lng: 14.418540,
         label: "Prague",
-        title: "Bridges of Prague",
+        title: "布拉格的桥",
         img: "",
-        meta: "Prague, Czech Republic",
-        desc: "Cobblestone streets, old bridges, and the sound of our footsteps echoing late at night. You kept stopping to take photos and I kept taking secret photos of you instead."
+        meta: "捷克布拉格",
+        desc: "鹅卵石街道，古老的桥梁，还有深夜里我们回荡的脚步声。你不停地停下来拍照，而我一直在偷偷拍你。"
       },
       {
         lat: 48.864716,
         lng: 2.349014,
         label: "Paris",
-        title: "Paris evenings",
+        title: "巴黎之夜",
         img: "",
-        meta: "Paris, France",
-        desc: "We didn’t need the perfect view of the tower or the perfect café. Just a bench, a pastry, your hand in mine, and suddenly the city really did feel like it was made for love."
+        meta: "法国巴黎",
+        desc: "我们不需要埃菲尔铁塔的完美视角，也不需要完美的咖啡馆。只需要一张长椅，一块点心，你牵着我的手，突然间这座城市真的感觉是为爱而生的。"
       }
     ];
 
